@@ -10,10 +10,13 @@ import {
   Hash, 
   MapPin, 
   Phone,
-  BookOpen
+  Loader2,
+  AlertCircle,
+  CheckCircle2
 } from 'lucide-react';
 import { Button } from '@/src/components/ui/Button';
 import { Input } from '@/src/components/ui/Input';
+import { memberService } from '@/src/lib/supabase';
 
 export default function MemberForm() {
   const navigate = useNavigate();
@@ -27,12 +30,29 @@ export default function MemberForm() {
     address: '',
     semester: 1
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Save to Supabase
-    console.log('Saving...', formData);
-    navigate('/members');
+    setError('');
+    setLoading(true);
+    try {
+      await memberService.insertMember({
+        ...formData,
+        status: 'AKTIF',
+        prodi: formData.jurusan,
+        fakultas: 'Teknik',
+      });
+      setSuccess(true);
+      setTimeout(() => navigate('/members'), 1200);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal menyimpan data. Silakan coba lagi.';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -69,6 +89,18 @@ export default function MemberForm() {
 
         <div className="md:col-span-2 space-y-6">
           <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
+            {error && (
+              <div className="flex items-start gap-2 bg-red-50 text-red-600 text-xs p-3 rounded-lg border border-red-100 mb-6">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
+            {success && (
+              <div className="flex items-start gap-2 bg-green-50 text-green-700 text-xs p-3 rounded-lg border border-green-100 mb-6">
+                <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>Data berhasil disimpan! Mengalihkan...</span>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
               <FormField label="Nama Lengkap" icon={User}>
                 <Input 
@@ -153,10 +185,14 @@ export default function MemberForm() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end gap-3">
-              <Button variant="outline" type="button" onClick={() => navigate('/members')}>Batal</Button>
-              <Button className="gap-2 px-8" type="submit">
-                <Save className="w-4 h-4" />
-                Simpan Data
+              <Button variant="outline" type="button" onClick={() => navigate('/members')} disabled={loading}>Batal</Button>
+              <Button className="gap-2 px-8" type="submit" disabled={loading || success}>
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                {loading ? 'Menyimpan...' : 'Simpan Data'}
               </Button>
             </div>
           </div>
