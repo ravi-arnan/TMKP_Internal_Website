@@ -9,7 +9,7 @@
   --color-accent-gold: #d4a017;
   --color-secondary: #d4a017;
   
-  --color-background: #f8fafc;
+  --color-background: #eef4f0;
   --color-surface: #ffffff;
   
   --radius-lg: 0.5rem;
@@ -18,7 +18,10 @@
 
 @layer base {
   body {
-    @apply bg-background text-slate-900 font-body;
+    @apply text-slate-900 font-body;
+    background: linear-gradient(135deg, #d6eadd 0%, #eef4f0 35%, #f5f0e6 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
   
   h1, h2, h3, h4, h5, h6 {

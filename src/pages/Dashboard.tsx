@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
   Users, 
@@ -34,6 +35,7 @@ const chartData = [
 ];
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentMembers, setRecentMembers] = useState<Member[]>([]);
 
@@ -141,7 +143,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="mt-auto pt-8">
-            <Button className="w-full py-6 uppercase tracking-widest text-xs">
+            <Button className="w-full py-6 uppercase tracking-widest text-xs" onClick={() => navigate('/members/new')}>
               Tambah Anggota Baru
             </Button>
           </div>

@@ -62,8 +62,8 @@ export default function MemberForm() {
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Formulir Anggota Baru</h2>
-          <p className="text-sm text-slate-500">Lengkapi data diri calon anggota HMI TMKP</p>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Tambah Data Anggota</h2>
+          <p className="text-sm text-slate-500">Masukkan data anggota ke dalam database HMI TMKP</p>
         </div>
       </div>
 
@@ -78,11 +78,11 @@ export default function MemberForm() {
           </div>
           
           <div className="bg-primary/5 p-6 rounded-xl border border-primary/10">
-            <h4 className="text-xs font-bold text-primary uppercase tracking-widest mb-3">Panduan Pengisian</h4>
+            <h4 className="text-xs font-bold text-primary uppercase tracking-widest mb-3">Panduan Input Data</h4>
             <ul className="text-[11px] text-slate-600 space-y-2 list-disc pl-4">
-              <li>Pastikan NIM sesuai dengan kartu mahasiswa</li>
-              <li>Gunakan email institusi jika tersedia</li>
-              <li>Alamat domisili saat ini di Semarang</li>
+              <li>NIM harus sesuai dengan data resmi universitas</li>
+              <li>Gunakan email aktif yang dapat dihubungi</li>
+              <li>Pastikan nomor WhatsApp dapat dihubungi</li>
             </ul>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function MemberForm() {
             {success && (
               <div className="flex items-start gap-2 bg-green-50 text-green-700 text-xs p-3 rounded-lg border border-green-100 mb-6">
                 <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Data berhasil disimpan! Mengalihkan...</span>
+                <span>Data anggota berhasil disimpan! Mengalihkan...</span>
               </div>
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
