@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
@@ -10,10 +10,10 @@ import {
   LogOut,
   ArrowLeftToLine,
   ArrowRightToLine,
-  User
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { motion } from 'motion/react';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
@@ -30,6 +30,16 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login');
+  };
+
+  const userEmail = user?.email || '';
+  const displayName = user?.user_metadata?.full_name || userEmail.split('@')[0] || 'Admin';
   return (
     <aside 
       className={cn(
@@ -116,19 +126,17 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       <div className="mt-auto flex flex-col gap-4">
         <div className={cn("p-3 bg-white rounded-xl border border-slate-200 flex items-center gap-3 overflow-hidden", collapsed && "justify-center p-2")}>
-          <img 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXZiGgRrcnQ1NBprCyWvH1uEtkcfL8g1CIlXk0yC7DUEm1c63K7lQNIc2YwrUc-m6mwX7lGbCXu4LZJ-S8-f6sIlJpsNZWOp68eNomImnzamKLfjZnu3jODTYADnMNjQ8uE6N0UufABE-mPOlDl-vK5nScWX6Qwk7Z3FqZ9s4F51QbciFdeRuRb0d0MBvVVk1ooebswT60wvXNo4i60TVGIZMYGwkoNpOeytWQ1bqo0AIwuvYCe_VyKCOMqLxqESCgRQoAtjToYvE" 
-            alt="User Avatar" 
-            className="w-8 h-8 rounded-full bg-primary/20 shrink-0"
-          />
+          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+            {displayName.charAt(0).toUpperCase()}
+          </div>
           {!collapsed && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="overflow-hidden"
             >
-              <p className="text-xs font-bold text-slate-900 truncate">Admin Utama</p>
-              <p className="text-[10px] text-gray-500 truncate">Ketua Komisariat</p>
+              <p className="text-xs font-bold text-slate-900 truncate">{displayName}</p>
+              <p className="text-[10px] text-gray-500 truncate">{userEmail}</p>
             </motion.div>
           )}
         </div>
@@ -146,6 +154,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           </button>
           <button 
             title={collapsed ? "Logout" : ""}
+            onClick={handleLogout}
             className={cn(
               "flex items-center gap-3 px-4 py-2 text-gray-500 hover:text-red-600 transition-colors font-headline uppercase tracking-wider text-[10px] font-semibold",
               collapsed && "justify-center px-0"

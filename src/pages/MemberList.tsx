@@ -60,16 +60,17 @@ export default function MemberList() {
 
   // Modal state
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState<{
     title: string;
     message: string;
-    onConfirm: () => void;
+    onConfirm: () => Promise<void>;
     confirmText?: string;
     variant?: 'danger' | 'warning' | 'primary';
   }>({
     title: '',
     message: '',
-    onConfirm: () => {},
+    onConfirm: async () => {},
   });
 
   const toggleSelectAll = () => {
@@ -93,10 +94,18 @@ export default function MemberList() {
       message: `Apakah Anda yakin ingin menghapus ${selectedIds.length} anggota yang dipilih? Tindakan ini tidak dapat dibatalkan.`,
       confirmText: 'Hapus Permanen',
       variant: 'danger',
-      onConfirm: () => {
-        setMembers(prev => prev.filter(m => !selectedIds.includes(m.id)));
-        setSelectedIds([]);
-        setIsConfirmModalOpen(false);
+      onConfirm: async () => {
+        setIsConfirmLoading(true);
+        try {
+          await memberService.bulkDeleteMembers(selectedIds);
+          setMembers(prev => prev.filter(m => !selectedIds.includes(m.id)));
+          setSelectedIds([]);
+          setIsConfirmModalOpen(false);
+        } catch (err) {
+          console.error('Failed to delete members:', err);
+        } finally {
+          setIsConfirmLoading(false);
+        }
       }
     });
     setIsConfirmModalOpen(true);
@@ -109,20 +118,33 @@ export default function MemberList() {
       message: `Apakah Anda yakin ingin menghapus ${name}? Tindakan ini tidak dapat dibatalkan.`,
       confirmText: 'Hapus Permanen',
       variant: 'danger',
-      onConfirm: () => {
-        setMembers(prev => prev.filter(m => m.id !== id));
-        setSelectedIds(prev => prev.filter(i => i !== id));
-        setIsConfirmModalOpen(false);
+      onConfirm: async () => {
+        setIsConfirmLoading(true);
+        try {
+          await memberService.deleteMember(id);
+          setMembers(prev => prev.filter(m => m.id !== id));
+          setSelectedIds(prev => prev.filter(i => i !== id));
+          setIsConfirmModalOpen(false);
+        } catch (err) {
+          console.error('Failed to delete member:', err);
+        } finally {
+          setIsConfirmLoading(false);
+        }
       }
     });
     setIsConfirmModalOpen(true);
   };
 
-  const handleBatchStatusUpdate = (status: Member['status']) => {
-    setMembers(prev => prev.map(m => 
-      selectedIds.includes(m.id) ? { ...m, status } : m
-    ));
-    setSelectedIds([]);
+  const handleBatchStatusUpdate = async (status: Member['status']) => {
+    try {
+      await memberService.bulkUpdateMemberStatus(selectedIds, status);
+      setMembers(prev => prev.map(m => 
+        selectedIds.includes(m.id) ? { ...m, status } : m
+      ));
+      setSelectedIds([]);
+    } catch (err) {
+      console.error('Failed to update member statuses:', err);
+    }
   };
 
   const handleSort = (key: keyof Member | 'name') => {
@@ -244,6 +266,8 @@ export default function MemberList() {
         isOpen={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
         {...confirmConfig}
+        onConfirm={confirmConfig.onConfirm}
+        isLoading={isConfirmLoading}
       />
 
       <AnimatePresence>

@@ -6,7 +6,8 @@ import {
   XCircle, 
   ExternalLink,
   UserCheck,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { verificationService } from '@/src/lib/supabase';
@@ -19,9 +20,10 @@ export default function Verification() {
   const [requests, setRequests] = useState<VerificationRequest[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<VerificationRequest | null>(null);
   const [activeTab, setActiveTab] = useState<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    verificationService.getRequests().then(setRequests);
+    verificationService.getRequests().then(setRequests).catch(console.error);
   }, []);
 
   const filteredRequests = requests.filter(req => req.status === activeTab);
@@ -31,9 +33,17 @@ export default function Verification() {
     REJECTED: requests.filter(r => r.status === 'REJECTED').length,
   };
 
-  const handleUpdateStatus = (id: string, status: 'APPROVED' | 'REJECTED') => {
-    setRequests(prev => prev.map(req => req.id === id ? { ...req, status } : req));
-    setSelectedRequest(null);
+  const handleUpdateStatus = async (id: string, status: 'APPROVED' | 'REJECTED') => {
+    setUpdatingId(id);
+    try {
+      await verificationService.updateStatus(id, status);
+      setRequests(prev => prev.map(req => req.id === id ? { ...req, status } : req));
+      setSelectedRequest(null);
+    } catch (err) {
+      console.error('Failed to update status:', err);
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   return (
@@ -157,7 +167,7 @@ export default function Verification() {
                 <div>
                   <h3 className="font-headline font-bold text-slate-900">Detail Pendataan</h3>
                   <Badge 
-                    variant={selectedRequest.status === 'PENDING' ? 'warning' : selectedRequest.status === 'APPROVED' ? 'success' : 'destructive'} 
+                    variant={selectedRequest.status === 'PENDING' ? 'warning' : selectedRequest.status === 'APPROVED' ? 'success' : 'danger'} 
                     className="mt-1"
                   >
                     {selectedRequest.status === 'PENDING' ? 'MENUNGGU VERIFIKASI' : selectedRequest.status === 'APPROVED' ? 'DISETUJUI' : 'DITOLAK'}
@@ -218,15 +228,19 @@ export default function Verification() {
                 <div className="p-4 bg-slate-50 border-t border-slate-200 grid grid-cols-2 gap-3">
                   <Button 
                     variant="outline" 
-                    className="text-red-600 hover:bg-red-50 hover:border-red-200"
+                    className="text-red-600 hover:bg-red-50 hover:border-red-200 gap-2"
                     onClick={() => handleUpdateStatus(selectedRequest.id, 'REJECTED')}
+                    disabled={updatingId === selectedRequest.id}
                   >
+                    {updatingId === selectedRequest.id ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                     Tolak
                   </Button>
                   <Button 
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-primary hover:bg-primary/90 gap-2"
                     onClick={() => handleUpdateStatus(selectedRequest.id, 'APPROVED')}
+                    disabled={updatingId === selectedRequest.id}
                   >
+                    {updatingId === selectedRequest.id ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                     Setujui
                   </Button>
                 </div>
