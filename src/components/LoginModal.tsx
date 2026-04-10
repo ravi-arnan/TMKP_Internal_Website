@@ -1,0 +1,133 @@
+import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Button } from '@/src/components/ui/Button';
+import { useAuth } from '@/src/lib/auth-context';
+import { useToast } from '@/src/lib/toast-context';
+
+type LoginModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const { login } = useAuth();
+  const toast = useToast();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const applyDemoCredentials = () => {
+    setEmail('admin@tmkp.local');
+    setPassword('admin123');
+  };
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+
+    const result = login({ email, password });
+
+    if (!result.success) {
+      toast.error('Login gagal', result.message);
+      setIsSubmitting(false);
+      return;
+    }
+
+    toast.success('Login berhasil', 'Selamat datang, Admin TMKP');
+    onClose();
+    navigate('/dashboard', { replace: true });
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(34,197,94,0.1)] rounded-2xl overflow-hidden"
+          >
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-green-500/10 rounded-full blur-[60px] pointer-events-none"></div>
+            
+            <div className="px-7 py-6 border-b border-white/10 flex items-center justify-between relative z-10">
+              <div>
+                <h2 className="text-2xl font-black text-white font-headline">Portal Admin</h2>
+                <p className="text-sm text-white/50 mt-1">Sistem Terpusat HMI TMKP</p>
+              </div>
+              <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-7 space-y-5 relative z-10">
+              <div className="flex justify-start">
+                <Button type="button" variant="outline" className="bg-transparent border-white/10 text-white/60 hover:bg-white/5" size="sm" onClick={applyDemoCredentials}>
+                    Gunakan Akun Demo Admin
+                </Button>
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">Email</label>
+                <div className="relative mt-2">
+                  <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="admin@tmkp.local"
+                    className="w-full h-10 bg-black/40 border border-white/10 rounded-lg px-3 pl-10 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">Password</label>
+                <div className="relative mt-2">
+                  <LockKeyhole className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="admin123"
+                    className="w-full h-10 bg-black/40 border border-white/10 rounded-lg px-3 pl-10 pr-10 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                    aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full bg-white text-black hover:bg-white/90 font-medium" disabled={isSubmitting}>
+                {isSubmitting ? 'Memproses...' : 'Akses Dashboard'}
+              </Button>
+
+              <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-white/60 space-y-1 backdrop-blur-sm">
+                <p className="font-semibold text-white/80">Petunjuk:</p>
+                <p className="inline-flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> Akses portal administrasi dengan menekan 'Gunakan Akun Demo Admin'</p>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}

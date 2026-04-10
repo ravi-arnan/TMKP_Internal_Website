@@ -1,31 +1,50 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import MemberList from './pages/MemberList';
 import MemberForm from './pages/MemberForm';
+import MemberEdit from './pages/MemberEdit';
 import Verification from './pages/Verification';
 import FinancialReports from './pages/FinancialReports';
+import Organization from './pages/Organization';
+import Events from './pages/Events';
+import SettingsPage from './pages/Settings';
+import PublicSubmission from './pages/PublicSubmission';
+import Frontpage from './pages/Frontpage';
+import { useAuth } from './lib/auth-context';
 
-// Placeholder pages for routes not yet fully implemented
-const Placeholder = ({ title }: { title: string }) => (
-  <div className="flex items-center justify-center h-full">
-    <h1 className="text-2xl font-bold text-slate-400">{title} Page Coming Soon</h1>
-  </div>
-);
+function RequireAuth() {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+  return <Outlet />;
+}
+
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="members" element={<MemberList />} />
-          <Route path="members/new" element={<MemberForm />} />
-          <Route path="verification" element={<Verification />} />
-          <Route path="organization" element={<Placeholder title="Kepengurusan" />} />
-          <Route path="events" element={<Placeholder title="Kegiatan" />} />
-          <Route path="reports" element={<FinancialReports />} />
+        <Route path="/" element={<Frontpage />} />
+        <Route path="/submission" element={<PublicSubmission />} />
+
+        <Route element={<RequireAuth />}>
+          <Route path="/dashboard" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="members" element={<MemberList />} />
+            <Route path="organization" element={<Organization />} />
+            <Route path="events" element={<Events />} />
+            <Route path="reports" element={<FinancialReports />} />
+            <Route path="settings" element={<SettingsPage />} />
+
+            <Route path="members/new" element={<MemberForm />} />
+            <Route path="members/:id/edit" element={<MemberEdit />} />
+            <Route path="verification" element={<Verification />} />
+          </Route>
         </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

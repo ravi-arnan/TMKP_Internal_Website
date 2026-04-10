@@ -10,19 +10,21 @@ export default function Layout() {
   const [searchQuery, setSearchQuery] = useState('');
   
   const getTitle = () => {
+    if (location.pathname.startsWith('/dashboard/members')) return 'Data Anggota';
+
     switch (location.pathname) {
-      case '/': return 'Dashboard';
-      case '/members': return 'Data Anggota';
-      case '/verification': return 'Verifikasi';
-      case '/organization': return 'Kepengurusan';
-      case '/events': return 'Kegiatan';
-      case '/reports': return 'Laporan Keuangan';
+      case '/dashboard': return 'Dashboard';
+      case '/dashboard/verification': return 'Verifikasi';
+      case '/dashboard/organization': return 'Kepengurusan';
+      case '/dashboard/events': return 'Kegiatan';
+      case '/dashboard/reports': return 'Laporan Keuangan';
+      case '/dashboard/settings': return 'Settings';
       default: return 'HMI TMKP';
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-[#000000] text-white flex font-['Instrument_Sans',sans-serif]">
       <Sidebar 
         collapsed={isSidebarCollapsed} 
         onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
@@ -41,13 +43,13 @@ export default function Layout() {
         <div className="p-8 flex-1">
           <Outlet context={{ searchQuery }} />
         </div>
-        <footer className="w-full py-6 mt-auto bg-white border-t border-primary/15">
+        <footer className="w-full py-6 mt-auto bg-white/5 border-t border-white/10 backdrop-blur-sm">
           <div className="flex justify-between items-center px-10">
-            <p className="text-xs text-slate-500">© 2025 HMI TMKP. All Rights Reserved.</p>
+            <p className="text-xs text-white/50">© 2025 HMI TMKP. All Rights Reserved.</p>
             <div className="flex gap-6">
-              <a href="#" className="text-xs text-slate-500 hover:text-accent-gold transition-colors">Privacy Policy</a>
-              <a href="#" className="text-xs text-slate-500 hover:text-accent-gold transition-colors">Terms of Service</a>
-              <a href="#" className="text-xs text-slate-500 hover:text-accent-gold transition-colors">Contact Support</a>
+              <a href="#" className="text-xs text-white/50 hover:text-green-400 transition-colors">Privacy Policy</a>
+              <a href="#" className="text-xs text-white/50 hover:text-green-400 transition-colors">Terms of Service</a>
+              <a href="#" className="text-xs text-white/50 hover:text-green-400 transition-colors">Contact Support</a>
             </div>
           </div>
         </footer>

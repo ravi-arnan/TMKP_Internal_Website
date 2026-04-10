@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import Papa from 'papaparse';
 import { 
-  Search, 
-  Filter, 
   UserPlus, 
   ChevronLeft, 
   ChevronRight,
@@ -18,7 +16,6 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
-  MoreVertical,
   ArrowUpDown,
   ArrowUp,
   ArrowDown
@@ -28,14 +25,13 @@ import { memberService } from '@/src/lib/supabase';
 import { Member } from '@/src/types';
 import { Badge } from '@/src/components/ui/Badge';
 import { Button } from '@/src/components/ui/Button';
-import { Input } from '@/src/components/ui/Input';
 import { cn } from '@/src/lib/utils';
+import { useToast } from '@/src/lib/toast-context';
+import { useAuth } from '@/src/lib/auth-context';
 import CSVImportModal from '@/src/components/CSVImportModal';
 import ConfirmationModal from '@/src/components/ConfirmationModal';
 import { 
   MapPin, 
-  BookOpen, 
-  Clock,
   ChevronDown,
   ChevronUp,
   User
@@ -43,11 +39,18 @@ import {
 
 export default function MemberList() {
   const { searchQuery } = useOutletContext<{ searchQuery: string }>();
-  const [members, setMembers] = useState<Member[]>([]);
+  const { session } = useAuth();
+  const toast = useToast();
+    const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [angkatanFilter, setAngkatanFilter] = useState('Semua');
+  const [jurusanFilter, setJurusanFilter] = useState('Semua Jurusan');
+  const [statusFilter, setStatusFilter] = useState('Semua Status');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   
   // Sorting state
   const [sortConfig, setSortConfig] = useState<{
@@ -72,19 +75,53 @@ export default function MemberList() {
     onConfirm: () => {},
   });
 
+  const filteredAndSortedMembers = useMemo(() => {
+    const query = (searchQuery || '').toLowerCase().trim();
+
+    const filtered = members.filter((member) => {
+      const matchesQuery =
+        member.name.toLowerCase().includes(query) ||
+        member.nim.toLowerCase().includes(query) ||
+        member.email.toLowerCase().includes(query);
+      const matchesAngkatan = angkatanFilter === 'Semua' || member.angkatan === angkatanFilter;
+      const matchesJurusan =
+        jurusanFilter === 'Semua Jurusan' ||
+        (member.prodi || member.jurusan).toLowerCase() === jurusanFilter.toLowerCase();
+      const matchesStatus = statusFilter === 'Semua Status' || member.status === statusFilter;
+
+      return matchesQuery && matchesAngkatan && matchesJurusan && matchesStatus;
+    });
+
+    return filtered.sort((a, b) => {
+      if (!sortConfig.direction) return 0;
+
+      const aValue = a[sortConfig.key as keyof Member];
+      const bValue = b[sortConfig.key as keyof Member];
+
+      if (aValue === bValue) return 0;
+
+      const comparison = String(aValue).localeCompare(String(bValue), undefined, {
+        numeric: true,
+        sensitivity: 'base',
+      });
+
+      return sortConfig.direction === 'asc' ? comparison : -comparison;
+    });
+  }, [angkatanFilter, jurusanFilter, members, searchQuery, sortConfig.direction, sortConfig.key, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredAndSortedMembers.length / pageSize));
+
+  const paginatedMembers = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredAndSortedMembers.slice(start, start + pageSize);
+  }, [currentPage, filteredAndSortedMembers]);
+
   const toggleSelectAll = () => {
-    if (selectedIds.length === filteredMembers.length) {
+    if (selectedIds.length === filteredAndSortedMembers.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(filteredMembers.map(m => m.id));
+      setSelectedIds(filteredAndSortedMembers.map((member) => member.id));
     }
-  };
-
-  const toggleSelect = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
   };
 
   const handleBatchDelete = () => {
@@ -94,10 +131,18 @@ export default function MemberList() {
       confirmText: 'Hapus Permanen',
       variant: 'danger',
       onConfirm: () => {
-        setMembers(prev => prev.filter(m => !selectedIds.includes(m.id)));
-        setSelectedIds([]);
-        setIsConfirmModalOpen(false);
-      }
+        void (async () => {
+          try {
+            await memberService.deleteMembers(selectedIds);
+            await fetchMembers();
+            setSelectedIds([]);
+            setIsConfirmModalOpen(false);
+            toast.success('Berhasil dihapus', `${selectedIds.length} anggota telah dihapus`);
+          } catch (error) {
+            toast.error('Gagal menghapus', 'Terjadi kesalahan saat menghapus data');
+          }
+        })();
+      },
     });
     setIsConfirmModalOpen(true);
   };
@@ -110,19 +155,31 @@ export default function MemberList() {
       confirmText: 'Hapus Permanen',
       variant: 'danger',
       onConfirm: () => {
-        setMembers(prev => prev.filter(m => m.id !== id));
-        setSelectedIds(prev => prev.filter(i => i !== id));
-        setIsConfirmModalOpen(false);
-      }
+        void (async () => {
+          try {
+            await memberService.deleteMembers([id]);
+            await fetchMembers();
+            setSelectedIds(prev => prev.filter(i => i !== id));
+            setIsConfirmModalOpen(false);
+            toast.success('Berhasil dihapus', `${name} telah dihapus dari sistem`);
+          } catch (error) {
+            toast.error('Gagal menghapus', 'Terjadi kesalahan saat menghapus data');
+          }
+        })();
+      },
     });
     setIsConfirmModalOpen(true);
   };
 
-  const handleBatchStatusUpdate = (status: Member['status']) => {
-    setMembers(prev => prev.map(m => 
-      selectedIds.includes(m.id) ? { ...m, status } : m
-    ));
-    setSelectedIds([]);
+  const handleBatchStatusUpdate = async (status: Member['status']) => {
+    try {
+      await memberService.updateMembersStatus(selectedIds, status);
+      await fetchMembers();
+      setSelectedIds([]);
+      toast.success('Status diperbarui', `${selectedIds.length} anggota berhasil diubah ke ${status}`);
+    } catch (error) {
+      toast.error('Gagal memperbarui', 'Terjadi kesalahan saat mengubah status');
+    }
   };
 
   const handleSort = (key: keyof Member | 'name') => {
@@ -135,28 +192,8 @@ export default function MemberList() {
     setSortConfig({ key, direction });
   };
 
-  const filteredMembers = members.filter(member => {
-    const query = (searchQuery || '').toLowerCase();
-    return (
-      member.name.toLowerCase().includes(query) ||
-      member.nim.toLowerCase().includes(query) ||
-      member.email.toLowerCase().includes(query)
-    );
-  }).sort((a, b) => {
-    if (!sortConfig.direction) return 0;
-
-    const aValue = a[sortConfig.key as keyof Member];
-    const bValue = b[sortConfig.key as keyof Member];
-
-    if (aValue === bValue) return 0;
-
-    const comparison = String(aValue).localeCompare(String(bValue), undefined, { numeric: true, sensitivity: 'base' });
-    
-    return sortConfig.direction === 'asc' ? comparison : -comparison;
-  });
-
   const handleExportCSV = () => {
-    const exportData = filteredMembers.map(member => ({
+    const exportData = filteredAndSortedMembers.map(member => ({
       'Nama Lengkap': member.name,
       'NIM': member.nim,
       'Angkatan': member.angkatan,
@@ -183,68 +220,148 @@ export default function MemberList() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    toast.success('Ekspor berhasil', `${filteredAndSortedMembers.length} data anggota telah diekspor`);
   };
 
-  const fetchMembers = () => {
+  const fetchMembers = async () => {
     setLoading(true);
-    memberService.getMembers().then(data => {
-      setMembers(data);
-      setLoading(false);
-    });
+    const data = await memberService.getMembers();
+    setMembers(data);
+    setLoading(false);
   };
+
+  const totalMembers = members.length;
+  const totalActiveMembers = members.filter(member => member.status === 'AKTIF').length;
+  const totalAlumniMembers = members.filter(member => member.status === 'ALUMNI').length;
+  const activeRatio = totalMembers > 0 ? ((totalActiveMembers / totalMembers) * 100).toFixed(1) : '0.0';
+  const currentYear = new Date().getFullYear().toString();
+  const previousYear = String(Number(currentYear) - 1);
+  const currentYearMembers = members.filter(member => member.angkatan === currentYear).length;
+  const previousYearMembers = members.filter(member => member.angkatan === previousYear).length;
+  const growth =
+    previousYearMembers === 0
+      ? (currentYearMembers > 0 ? 100 : 0)
+      : Math.round(((currentYearMembers - previousYearMembers) / previousYearMembers) * 100);
 
   useEffect(() => {
-    fetchMembers();
+    void fetchMembers();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setSelectedIds([]);
+  }, [searchQuery, angkatanFilter, jurusanFilter, statusFilter]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const angkatanOptions = useMemo(() => {
+    const years = members
+      .map((member) => member.angkatan)
+      .filter((value): value is string => Boolean(value));
+
+    const uniqueYears = [...new Set<string>(years)].sort(
+      (a, b) => b.localeCompare(a, undefined, { numeric: true }),
+    );
+    return ['Semua', ...uniqueYears];
+  }, [members]);
+
+  const jurusanOptions = useMemo(() => {
+    const departments = members
+      .map((member) => member.prodi || member.jurusan)
+      .filter((value): value is string => Boolean(value));
+
+    const values = [...new Set<string>(departments)].sort(
+      (a, b) => a.localeCompare(b),
+    );
+    return ['Semua Jurusan', ...values];
+  }, [members]);
+
+  const statusOptions = ['Semua Status', 'PENDING', 'AKTIF', 'NON-AKTIF', 'ALUMNI'];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="flex flex-wrap items-end gap-3">
-          <FilterGroup label="Angkatan" options={['Semua', '2023', '2022', '2021', '2020']} />
-          <FilterGroup label="Jurusan" options={['Semua Jurusan', 'Teknik Mesin', 'Teknik Perkapalan', 'Sistem Perkapalan']} />
-          <FilterGroup label="Status" options={['Semua Status', 'Aktif', 'Alumni', 'Non-Aktif']} />
-          <Button variant="outline" size="icon">
-            <Filter className="w-4 h-4" />
+          <FilterGroup
+            label="Angkatan"
+            value={angkatanFilter}
+            options={angkatanOptions}
+            onChange={setAngkatanFilter}
+          />
+          <FilterGroup
+            label="Jurusan"
+            value={jurusanFilter}
+            options={jurusanOptions}
+            onChange={setJurusanFilter}
+          />
+          <FilterGroup
+            label="Status"
+            value={statusFilter}
+            options={statusOptions}
+            onChange={setStatusFilter}
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setAngkatanFilter('Semua');
+              setJurusanFilter('Semua Jurusan');
+              setStatusFilter('Semua Status');
+            }}
+          >
+            Reset Filter
           </Button>
+          
         </div>
         <div className="flex items-center gap-3">
+          {true && (
+            <Button 
+              variant="outline" 
+              className="gap-2 px-5 py-2.5 text-white/70 hover:text-green-400 hover:border-green-500"
+              onClick={() => setIsImportModalOpen(true)}
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              <span>Import CSV</span>
+            </Button>
+          )}
           <Button 
             variant="outline" 
-            className="gap-2 px-5 py-2.5 text-slate-600 hover:text-primary hover:border-primary"
-            onClick={() => setIsImportModalOpen(true)}
-          >
-            <FileSpreadsheet className="w-4 h-4" />
-            <span>Import CSV</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="gap-2 px-5 py-2.5 text-slate-600 hover:text-primary hover:border-primary"
+            className="gap-2 px-5 py-2.5 text-white/70 hover:text-green-400 hover:border-green-500"
             onClick={handleExportCSV}
           >
             <Download className="w-4 h-4" />
             <span>Export CSV</span>
           </Button>
-          <Link to="/members/new">
-            <Button className="gap-2 px-5 py-2.5">
-              <UserPlus className="w-4 h-4" />
-              <span>Tambah Anggota</span>
-            </Button>
-          </Link>
+          {true && (
+            <Link to="/dashboard/members/new">
+              <Button className="gap-2 px-5 py-2.5">
+                <UserPlus className="w-4 h-4" />
+                <span>Tambah Anggota</span>
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 
-      <CSVImportModal 
-        isOpen={isImportModalOpen} 
-        onClose={() => setIsImportModalOpen(false)} 
-        onSuccess={fetchMembers}
-      />
+      {true && (
+        <CSVImportModal 
+          isOpen={isImportModalOpen} 
+          onClose={() => setIsImportModalOpen(false)} 
+          onSuccess={fetchMembers}
+        />
+      )}
 
-      <ConfirmationModal 
-        isOpen={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
-        {...confirmConfig}
-      />
+      {true && (
+        <ConfirmationModal 
+          isOpen={isConfirmModalOpen}
+          onClose={() => setIsConfirmModalOpen(false)}
+          {...confirmConfig}
+        />
+      )}
 
       <AnimatePresence>
         {selectedIds.length > 0 && (
@@ -255,7 +372,7 @@ export default function MemberList() {
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-8 border border-white/10 backdrop-blur-xl"
           >
             <div className="flex items-center gap-3 pr-6 border-r border-white/10">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center font-bold text-sm">
+              <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center font-bold text-sm">
                 {selectedIds.length}
               </div>
               <p className="text-sm font-medium whitespace-nowrap">Anggota Terpilih</p>
@@ -265,8 +382,8 @@ export default function MemberList() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-white hover:bg-white/10 gap-2"
-                onClick={() => handleBatchStatusUpdate('AKTIF')}
+                className="text-white hover:bg-white/5/10 gap-2"
+                onClick={() => void handleBatchStatusUpdate('AKTIF')}
               >
                 <CheckCircle className="w-4 h-4 text-green-400" />
                 <span>Aktifkan</span>
@@ -274,10 +391,10 @@ export default function MemberList() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-white hover:bg-white/10 gap-2"
-                onClick={() => handleBatchStatusUpdate('NON-AKTIF')}
+                className="text-white hover:bg-white/5/10 gap-2"
+                onClick={() => void handleBatchStatusUpdate('NON-AKTIF')}
               >
-                <XCircle className="w-4 h-4 text-slate-400" />
+                <XCircle className="w-4 h-4 text-white/40" />
                 <span>Non-Aktifkan</span>
               </Button>
               <Button 
@@ -293,7 +410,7 @@ export default function MemberList() {
 
             <button 
               onClick={() => setSelectedIds([])}
-              className="ml-4 p-1 hover:bg-white/10 rounded-full transition-colors"
+              className="ml-4 p-1 hover:bg-white/5/10 rounded-full transition-colors"
             >
               <XCircle className="w-5 h-5 opacity-50" />
             </button>
@@ -301,120 +418,140 @@ export default function MemberList() {
         )}
       </AnimatePresence>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
+              <tr className="bg-white/5 border-b border-white/10">
                 <th className="pl-6 py-4 w-10">
-                  <input 
-                    type="checkbox" 
-                    className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
-                    checked={selectedIds.length === filteredMembers.length && filteredMembers.length > 0}
-                    onChange={toggleSelectAll}
-                  />
+                  {true ? (
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 rounded border-slate-300 text-green-400 focus:ring-green-500 cursor-pointer"
+                      checked={selectedIds.length === filteredAndSortedMembers.length && filteredAndSortedMembers.length > 0}
+                      onChange={toggleSelectAll}
+                    />
+                  ) : (
+                    <span className="text-[10px] text-white/40 uppercase tracking-widest">No</span>
+                  )}
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
                   <button 
-                    className="flex items-center gap-1 hover:text-primary transition-colors"
+                    className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('name')}
                   >
                     Foto & Nama Lengkap
                     <SortIcon column="name" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
                   <button 
-                    className="flex items-center gap-1 hover:text-primary transition-colors"
+                    className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('nim')}
                   >
                     NIM
                     <SortIcon column="nim" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
                   <button 
-                    className="flex items-center gap-1 hover:text-primary transition-colors"
+                    className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('email')}
                   >
                     Email
                     <SortIcon column="email" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">No. HP</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">No. HP</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
                   <button 
-                    className="flex items-center gap-1 hover:text-primary transition-colors"
+                    className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('angkatan')}
                   >
                     Angkatan
                     <SortIcon column="angkatan" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
                   <button 
-                    className="flex items-center gap-1 hover:text-primary transition-colors"
+                    className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('jurusan')}
                   >
                     Jurusan
                     <SortIcon column="jurusan" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
                   <button 
-                    className="flex items-center gap-1 hover:text-primary transition-colors"
+                    className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('status')}
                   >
                     Status
                     <SortIcon column="status" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">Aksi</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredMembers.map((member) => (
+            <tbody className="divide-y divide-white/5">
+              {loading ? (
+                <tr>
+                  <td colSpan={9} className="px-6 py-12 text-center text-white/50">Memuat data anggota...</td>
+                </tr>
+              ) : filteredAndSortedMembers.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="px-6 py-12 text-center text-white/50">Belum ada data anggota.</td>
+                </tr>
+              ) : paginatedMembers.map((member) => (
                 <React.Fragment key={member.id}>
                   <tr 
                     className={cn(
-                      "hover:bg-slate-50/80 transition-colors group cursor-pointer",
-                      expandedId === member.id && "bg-slate-50",
-                      selectedIds.includes(member.id) && "bg-primary/5"
+                      "hover:bg-white/5/80 transition-colors group cursor-pointer",
+                      expandedId === member.id && "bg-white/5",
+                      selectedIds.includes(member.id) && "bg-green-500/5"
                     )}
                     onClick={() => setExpandedId(expandedId === member.id ? null : member.id)}
                   >
                     <td className="pl-6 py-4" onClick={(e) => e.stopPropagation()}>
-                      <input 
-                        type="checkbox" 
-                        className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
-                        checked={selectedIds.includes(member.id)}
-                        onChange={(e) => {
-                          const id = member.id;
-                          setSelectedIds(prev => 
-                            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-                          );
-                        }}
-                      />
+                      {true ? (
+                        <input 
+                          type="checkbox" 
+                          className="w-4 h-4 rounded border-slate-300 text-green-400 focus:ring-green-500 cursor-pointer"
+                          checked={selectedIds.includes(member.id)}
+                          onChange={() => {
+                            const id = member.id;
+                            setSelectedIds(prev => 
+                              prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+                            );
+                          }}
+                        />
+                      ) : (
+                        <span className="text-xs text-white/40">•</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200">
-                          <img src={member.photo_url} alt={member.name} className="w-full h-full object-cover" />
+                        <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-green-500/10 text-green-400 flex items-center justify-center font-semibold text-xs">
+                          {member.photo_url ? (
+                            <img src={member.photo_url} alt={member.name} className="w-full h-full object-cover" />
+                          ) : (
+                            member.name.split(' ').map((part) => part[0]).join('').slice(0, 2)
+                          )}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-bold text-slate-900">{member.name}</p>
-                            {expandedId === member.id ? <ChevronUp className="w-3 h-3 text-slate-400" /> : <ChevronDown className="w-3 h-3 text-slate-400" />}
+                            <p className="text-sm font-bold text-white">{member.name}</p>
+                            {expandedId === member.id ? <ChevronUp className="w-3 h-3 text-white/40" /> : <ChevronDown className="w-3 h-3 text-white/40" />}
                           </div>
-                          <p className="text-[11px] text-slate-500">{member.email}</p>
+                          <p className="text-[11px] text-white/50">{member.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm font-medium text-slate-600">{member.nim}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{member.email}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{member.phone || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{member.angkatan}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{member.jurusan}</td>
+                    <td className="px-6 py-4 text-sm font-medium text-white/70">{member.nim}</td>
+                    <td className="px-6 py-4 text-sm text-white/70">{member.email}</td>
+                    <td className="px-6 py-4 text-sm text-white/70">{member.phone || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-white/70">{member.angkatan}</td>
+                    <td className="px-6 py-4 text-sm text-white/70">{member.jurusan}</td>
                     <td className="px-6 py-4">
                       <Badge variant={member.status === 'AKTIF' ? 'success' : member.status === 'ALUMNI' ? 'info' : 'default'}>
                         {member.status}
@@ -422,26 +559,40 @@ export default function MemberList() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="outline" size="icon" className="w-8 h-8 hover:text-primary" onClick={(e) => e.stopPropagation()}>
-                          <Edit3 className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="icon" className="w-8 h-8 hover:text-accent-gold" onClick={(e) => e.stopPropagation()}>
+                        {true && (
+                          <Link to={`/dashboard/members/${member.id}/edit`} onClick={(e) => e.stopPropagation()}>
+                            <Button variant="outline" size="icon" className="w-8 h-8 hover:text-green-400">
+                              <Edit3 className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="w-8 h-8 hover:text-emerald-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedId(member.id);
+                          }}
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
-                          className="w-8 h-8 hover:text-red-500 hover:border-red-200" 
-                          onClick={(e) => handleDeleteMember(member.id, member.name, e)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        {true && (
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="w-8 h-8 hover:text-red-500 hover:border-red-200" 
+                            onClick={(e) => handleDeleteMember(member.id, member.name, e)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
                   <AnimatePresence>
                     {expandedId === member.id && (
-                      <tr className="bg-slate-50/50">
+                      <tr className="bg-white/5/50">
                         <td colSpan={9} className="px-6 py-0">
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
@@ -450,36 +601,36 @@ export default function MemberList() {
                             transition={{ duration: 0.3, ease: 'easeInOut' }}
                             className="overflow-hidden"
                           >
-                            <div className="py-6 grid grid-cols-1 md:grid-cols-4 gap-8 border-t border-slate-100">
+                            <div className="py-6 grid grid-cols-1 md:grid-cols-4 gap-8 border-t border-white/5">
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
                                   <MapPin className="w-3 h-3" />
                                   Domisili
                                 </div>
-                                <p className="text-sm text-slate-700 leading-relaxed">
+                                <p className="text-sm text-white/80 leading-relaxed">
                                   {member.address || 'Alamat belum diatur'}
                                 </p>
                               </div>
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
                                   <GraduationCap className="w-3 h-3" />
                                   Fakultas / Prodi
                                 </div>
-                                <p className="text-sm text-slate-700">
+                                <p className="text-sm text-white/80">
                                   {member.fakultas || '-'} / {member.prodi || '-'}
                                 </p>
                               </div>
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
                                   <User className="w-3 h-3" />
                                   Tempat, Tgl Lahir
                                 </div>
-                                <p className="text-sm text-slate-700">
+                                <p className="text-sm text-white/80">
                                   {member.tempat_tanggal_lahir || '-'}
                                 </p>
                               </div>
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
                                   <TrendingUp className="w-3 h-3" />
                                   Perkaderan (LK)
                                 </div>
@@ -501,20 +652,53 @@ export default function MemberList() {
           </table>
         </div>
 
-        <div className="px-6 py-4 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200">
-          <p className="text-xs text-slate-500">
-            Menampilkan <span className="text-slate-900 font-semibold">1-10</span> dari <span className="text-slate-900 font-semibold">142</span> anggota
+        <div className="px-6 py-4 bg-white/5/50 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10">
+          <p className="text-xs text-white/50">
+            Menampilkan halaman <span className="text-white font-semibold">{currentPage}</span> dari <span className="text-white font-semibold">{totalPages}</span> · total <span className="text-white font-semibold">{filteredAndSortedMembers.length}</span> hasil
           </p>
           <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" className="w-8 h-8">
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-8 h-8"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+            >
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <Button size="sm" className="w-8 h-8 p-0">1</Button>
-            <Button variant="outline" size="sm" className="w-8 h-8 p-0">2</Button>
-            <Button variant="outline" size="sm" className="w-8 h-8 p-0">3</Button>
-            <span className="text-slate-400 px-1">...</span>
-            <Button variant="outline" size="sm" className="w-8 h-8 p-0">15</Button>
-            <Button variant="outline" size="icon" className="w-8 h-8">
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
+              const pageNumber = index + 1;
+              const isActive = pageNumber === currentPage;
+              return (
+                <Button
+                  key={pageNumber}
+                  variant={isActive ? 'primary' : 'outline'}
+                  size="sm"
+                  className="w-8 h-8 p-0"
+                  onClick={() => setCurrentPage(pageNumber)}
+                >
+                  {pageNumber}
+                </Button>
+              );
+            })}
+            {totalPages > 5 && <span className="text-white/40 px-1">...</span>}
+            {totalPages > 5 && (
+              <Button
+                variant={currentPage === totalPages ? 'primary' : 'outline'}
+                size="sm"
+                className="w-8 h-8 p-0"
+                onClick={() => setCurrentPage(totalPages)}
+              >
+                {totalPages}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-8 h-8"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+            >
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
@@ -522,19 +706,33 @@ export default function MemberList() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <InsightCard label="Rasio Aktif" value="84.2%" icon={PieChart} />
-        <InsightCard label="Total Alumni" value="2,840" icon={GraduationCap} variant="secondary" />
-        <InsightCard label="Pertumbuhan" value="+12%" icon={TrendingUp} />
+        <InsightCard label="Rasio Aktif" value={`${activeRatio}%`} icon={PieChart} />
+        <InsightCard label="Total Alumni" value={totalAlumniMembers.toLocaleString()} icon={GraduationCap} variant="secondary" />
+        <InsightCard label="Pertumbuhan" value={`${growth > 0 ? '+' : ''}${growth}%`} icon={TrendingUp} />
       </div>
     </div>
   );
 }
 
-function FilterGroup({ label, options }: { label: string, options: string[] }) {
+function FilterGroup({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
   return (
     <div className="space-y-1.5">
-      <label className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold px-1">{label}</label>
-      <select className="bg-white border border-slate-200 text-sm text-slate-900 rounded px-4 py-2 focus:ring-2 focus:ring-primary/20 appearance-none min-w-[120px] cursor-pointer outline-none">
+      <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold px-1">{label}</label>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="bg-white/5 border border-white/10 text-sm text-white rounded px-4 py-2 focus:ring-2 focus:ring-green-500/20 appearance-none min-w-[120px] cursor-pointer outline-none"
+      >
         {options.map(opt => <option key={opt}>{opt}</option>)}
       </select>
     </div>
@@ -543,12 +741,12 @@ function FilterGroup({ label, options }: { label: string, options: string[] }) {
 
 function InsightCard({ label, value, icon: Icon, variant = 'primary' }: any) {
   return (
-    <div className="bg-white p-5 rounded-xl border border-slate-200 flex items-center justify-between shadow-sm">
+    <div className="bg-white/5 p-5 rounded-xl border border-white/10 flex items-center justify-between shadow-2xl">
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{label}</p>
-        <p className={cn("text-2xl font-black font-headline", variant === 'secondary' ? "text-accent-gold" : "text-primary")}>{value}</p>
+        <p className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-1">{label}</p>
+        <p className={cn("text-2xl font-black font-headline", variant === 'secondary' ? "text-emerald-400" : "text-green-400")}>{value}</p>
       </div>
-      <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", variant === 'secondary' ? "bg-accent-gold/5 text-accent-gold" : "bg-primary/5 text-primary")}>
+      <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", variant === 'secondary' ? "bg-emerald-500/5 text-emerald-400" : "bg-green-500/5 text-green-400")}>
         <Icon className="w-6 h-6" />
       </div>
     </div>
