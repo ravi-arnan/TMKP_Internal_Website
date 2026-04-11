@@ -147,7 +147,7 @@ export default function Dashboard() {
         />
         <StatCard 
           label="Kegiatan Bulan Ini" 
-          value={stats.monthlyEvents.toString().padStart(2, '0')} 
+          value={stats.monthlyEvents.toString()} 
           icon={Calendar}
           subtext="3 Mendatang, 5 Selesai"
         />
@@ -292,8 +292,7 @@ function StatCard({ label, value, growth, badge, icon: Icon, subtext, progress, 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "bg-white/5 backdrop-blur-md p-6 rounded-2xl relative overflow-hidden group border border-white/10 shadow-2xl",
-        variant === 'secondary' && "border-b-2 border-b-green-400"
+        "bg-white/5 backdrop-blur-md p-6 rounded-2xl relative overflow-hidden group border border-white/10 shadow-2xl"
       )}
     >
       <div className={cn(

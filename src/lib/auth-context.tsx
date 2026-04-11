@@ -21,8 +21,8 @@ const STORAGE_KEY = 'tmkp_auth_session';
 
 const demoAccount: AuthSession & { password: string } = {
   name: 'Admin TMKP',
-  email: 'admin@tmkp.local',
-  password: 'admin123',
+  email: 'admin',
+  password: 'Z#nn5~8f!d1a',
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

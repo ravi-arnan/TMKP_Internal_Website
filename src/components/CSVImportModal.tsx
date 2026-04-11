@@ -45,6 +45,7 @@ export default function CSVImportModal({ isOpen, onClose, onSuccess }: CSVImport
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
+      transformHeader: (header) => header.trim(),
       complete: (results) => {
         setIsParsing(false);
         if (results.errors.length > 0) {
@@ -83,7 +84,7 @@ export default function CSVImportModal({ isOpen, onClose, onSuccess }: CSVImport
         address: row['Domisili'],
         fakultas: row['Fakultas'],
         prodi: row['Prodi'],
-        tempat_tanggal_lahir: row['Tempat, tanggal lahir'],
+        tempat_tanggal_lahir: row['Tempat Tanggal Lahir'] || row['Tempat, tanggal lahir'],
         tahun_lk1: row['Tahun LK 1'],
         tahun_lk2: row['Tahun LK 2'],
         tahun_lk3: row['Tahun LK 3'],
@@ -111,7 +112,7 @@ export default function CSVImportModal({ isOpen, onClose, onSuccess }: CSVImport
       'Prodi', 
       'Nomor WA', 
       'Domisili', 
-      'Tempat, tanggal lahir', 
+      'Tempat Tanggal Lahir', 
       'Tahun LK 1', 
       'Tahun LK 2', 
       'Tahun LK 3'

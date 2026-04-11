@@ -20,10 +20,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const applyDemoCredentials = () => {
-    setEmail('admin@tmkp.local');
-    setPassword('admin123');
-  };
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -72,21 +68,19 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </div>
 
             <form onSubmit={handleSubmit} className="p-7 space-y-5 relative z-10">
-              <div className="flex justify-start">
-                <Button type="button" variant="outline" className="bg-transparent border-white/10 text-white/60 hover:bg-white/5" size="sm" onClick={applyDemoCredentials}>
-                    Gunakan Akun Demo Admin
-                </Button>
-              </div>
+                <div className="flex flex-col mb-4">
+                  <h2 className="text-xl font-bold tracking-tight text-white mb-2">Akses Terbatas</h2>
+                </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">Email</label>
+                <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">Username</label>
                 <div className="relative mt-2">
                   <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
                   <input
-                    type="email"
+                    type="text"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    placeholder="admin@tmkp.local"
+                    placeholder="Masukkan username admin"
                     className="w-full h-10 bg-black/40 border border-white/10 rounded-lg px-3 pl-10 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50"
                     required
                   />
@@ -101,7 +95,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    placeholder="admin123"
+                    placeholder="Masukkan password"
                     className="w-full h-10 bg-black/40 border border-white/10 rounded-lg px-3 pl-10 pr-10 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50"
                     required
                   />
@@ -120,10 +114,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 {isSubmitting ? 'Memproses...' : 'Akses Dashboard'}
               </Button>
 
-              <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-white/60 space-y-1 backdrop-blur-sm">
-                <p className="font-semibold text-white/80">Petunjuk:</p>
-                <p className="inline-flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> Akses portal administrasi dengan menekan 'Gunakan Akun Demo Admin'</p>
-              </div>
+
             </form>
           </motion.div>
         </div>
