@@ -35,9 +35,9 @@ export default function Frontpage() {
   return (
     <div className="relative w-full min-h-screen bg-[#000000] text-white flex flex-col font-['Instrument_Sans',sans-serif]">
       {/* Navbar Component */}
-      <nav className="fixed top-0 w-full z-50 bg-transparent px-6 py-4 flex items-center justify-between">
+      <nav className="fixed top-0 w-full z-50 bg-transparent px-6 py-4 flex items-center justify-center">
         {/* Left Section */}
-        <div className="flex items-center text-white">
+        <div className="absolute left-6 flex items-center text-white">
           {/* Sunburst icon (24x24px SVG) */}
           <Sun className="w-6 h-6" />
         </div>
@@ -46,15 +46,8 @@ export default function Frontpage() {
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
           <a href="#transparency" className="hover:text-white transition-colors">Laporan Keuangan</a>
           <Link to="/submission" className="hover:text-white transition-colors">Pendataan Anggota</Link>
-          <Link to="#" className="hover:text-white transition-colors">Tentang Organisasi</Link>
-          <Link to="#" className="hover:text-white transition-colors">Kontak</Link>
-        </div>
-
-        {/* Right Section */}
-        <div className="flex items-center gap-4">
-          <button onClick={() => setIsLoginModalOpen(true)} className="bg-white text-black rounded-full px-5 py-2.5 text-sm font-semibold hover:bg-white/90 transition-colors cursor-pointer">
-            Masuk Admin
-          </button>
+          <a href="https://www.instagram.com/hmi.tmkp.unud" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Tentang Organisasi</a>
+          <a href="mailto:hmikomisariattmkp47@gmail.com" className="hover:text-white transition-colors">Kontak</a>
         </div>
       </nav>
 

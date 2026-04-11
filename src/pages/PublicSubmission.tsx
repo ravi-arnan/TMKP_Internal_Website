@@ -72,6 +72,9 @@ export default function PublicSubmission() {
     phone: '',
     address: '',
     semester: 1,
+    tahun_lk1: '',
+    tahun_lk2: '',
+    tahun_lk3: '',
   });
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState<'KRS' | 'UKT'>('KRS');
@@ -111,6 +114,10 @@ export default function PublicSubmission() {
       errors.document = 'Ukuran berkas maksimal 2MB (PDF/JPG/PNG)';
     }
 
+    if (!formData.tahun_lk1.trim()) {
+      errors.tahun_lk1 = 'Tahun LK 1 wajib diisi';
+    }
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -141,6 +148,9 @@ export default function PublicSubmission() {
       phone: '',
       address: '',
       semester: 1,
+      tahun_lk1: '',
+      tahun_lk2: '',
+      tahun_lk3: '',
     });
     setDocumentFile(null);
     setDocumentType('KRS');
@@ -161,6 +171,9 @@ export default function PublicSubmission() {
       const newMember = await memberService.createMember({
         ...formData,
         prodi: formData.jurusan,
+        tahun_lk1: formData.tahun_lk1 || undefined,
+        tahun_lk2: formData.tahun_lk2 || undefined,
+        tahun_lk3: formData.tahun_lk3 || undefined,
         status: 'PENDING',
       });
 
@@ -278,7 +291,7 @@ export default function PublicSubmission() {
                   <motion.div variants={itemVariants}>
                     <FormField label="Nama Lengkap" icon={User} error={validationErrors.name}>
                       <Input
-                        placeholder="Cth: Ahmad Syarif"
+                        placeholder="Cth: Ronaldo"
                         value={formData.name}
                         onChange={(event) => handleFieldChange('name', event.target.value)}
                         className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.name ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' : ''}`}
@@ -291,7 +304,7 @@ export default function PublicSubmission() {
                     <FormField label="Alamat Email" icon={Mail} error={validationErrors.email}>
                       <Input
                         type="email"
-                        placeholder="ahmad@student.undip.ac.id"
+                        placeholder="ronaldo@gmail.com"
                         value={formData.email}
                         onChange={(event) => handleFieldChange('email', event.target.value)}
                         className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.email ? 'border-red-500/50' : ''}`}
@@ -303,7 +316,7 @@ export default function PublicSubmission() {
                   <motion.div variants={itemVariants}>
                     <FormField label="Nomor Induk Mahasiswa" icon={Hash} error={validationErrors.nim}>
                       <Input
-                        placeholder="21090120140001"
+                        placeholder="2005551010"
                         value={formData.nim}
                         onChange={(event) => handleFieldChange('nim', event.target.value)}
                         className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.nim ? 'border-red-500/50' : ''}`}
@@ -400,6 +413,40 @@ export default function PublicSubmission() {
                         onChange={(event) => handleFieldChange('address', event.target.value)}
                       />
                     </FormField>
+                  </motion.div>
+
+                  <motion.div variants={itemVariants} className="md:col-span-2 space-y-4 pt-4 border-t border-white/10 mt-4">
+                    <p className="text-sm font-bold text-white uppercase tracking-widest">Informasi Perkaderan</p>
+                    <div className="grid grid-cols-3 gap-4">
+                      <FormField label="Tahun LK 1 *" error={validationErrors.tahun_lk1}>
+                        <Input
+                          placeholder="2023"
+                          value={formData.tahun_lk1}
+                          onChange={(event) => handleFieldChange('tahun_lk1', event.target.value)}
+                          className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.tahun_lk1 ? 'border-red-500/50' : ''}`}
+                          maxLength={4}
+                          required
+                        />
+                      </FormField>
+                      <FormField label="Tahun LK 2">
+                        <Input
+                          placeholder="Opsional"
+                          value={formData.tahun_lk2}
+                          onChange={(event) => handleFieldChange('tahun_lk2', event.target.value)}
+                          className="bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20"
+                          maxLength={4}
+                        />
+                      </FormField>
+                      <FormField label="Tahun LK 3">
+                        <Input
+                          placeholder="Opsional"
+                          value={formData.tahun_lk3}
+                          onChange={(event) => handleFieldChange('tahun_lk3', event.target.value)}
+                          className="bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20"
+                          maxLength={4}
+                        />
+                      </FormField>
+                    </div>
                   </motion.div>
 
                   <motion.div variants={itemVariants} className="md:col-span-2 space-y-4 pt-4 border-t border-white/10 mt-4">
