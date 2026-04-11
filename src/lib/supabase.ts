@@ -299,3 +299,30 @@ export const dashboardService = {
     };
   },
 };
+
+export const settingsService = {
+  async getSetting(key: string) {
+    const { data, error } = await supabase
+      .from('app_settings')
+      .select('value')
+      .eq('key', key)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching setting:', error);
+      return null;
+    }
+    return data?.value || null;
+  },
+
+  async updateSetting(key: string, value: string) {
+    const { data, error } = await supabase
+      .from('app_settings')
+      .upsert({ key, value, updated_at: new Date().toISOString() })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+};

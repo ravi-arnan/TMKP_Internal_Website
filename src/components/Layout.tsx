@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import AIChatbot from './AIChatbot';
 import { cn } from '@/src/lib/utils';
 
 export default function Layout() {
@@ -54,6 +55,7 @@ export default function Layout() {
           </div>
         </footer>
       </main>
+      <AIChatbot />
     </div>
   );
 }
