@@ -10,7 +10,9 @@ import {
   LogOut,
   ArrowLeftToLine,
   ArrowRightToLine,
-  Sun
+  Sun,
+  PackageOpen,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { motion } from "motion/react";
@@ -20,6 +22,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Users, label: "Data Anggota", path: "/dashboard/members" },
   { icon: UserCheck, label: "Verifikasi", path: "/dashboard/verification" },
+  { icon: PackageOpen, label: "Peminjaman", path: "/dashboard/borrowing" },
   { icon: Network, label: "Kepengurusan", path: "/dashboard/organization" },
   { icon: CalendarDays, label: "Kegiatan", path: "/dashboard/events" },
   { icon: FileText, label: "Laporan Keuangan", path: "/dashboard/reports" },
@@ -30,15 +33,24 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
+const navItemBase =
+  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition overflow-hidden";
+
+const inactiveNav =
+  "text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white";
+
+const activeNav =
+  "text-green-700 bg-green-50 border-l-2 border-green-600 dark:text-green-400 dark:bg-green-500/10 dark:border-green-400";
+
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const { session, logout } = useAuth();
   const navigate = useNavigate();
-  const visibleNavItems = navItems;
 
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 h-screen z-50 bg-black/40 backdrop-blur-xl flex flex-col py-6 px-4 gap-2 border-r border-white/10 transition-all duration-300 ease-in-out shadow-2xl",
+        "fixed left-0 top-0 h-screen z-50 flex flex-col py-6 px-4 gap-2 transition-all duration-300 ease-in-out",
+        "bg-white border-r border-gray-200 dark:bg-black/40 dark:border-white/10 dark:backdrop-blur-xl dark:shadow-2xl",
         collapsed ? "w-20" : "w-64",
       )}
     >
@@ -50,26 +62,23 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       >
         {!collapsed ? (
           <>
-            <div className="flex items-center gap-4 overflow-hidden">
-              <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0 border border-green-500/30">
-                <Sun className="w-6 h-6 text-green-400" />
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center shrink-0 dark:bg-green-500/15 dark:border dark:border-green-500/30">
+                <Sun className="w-5 h-5 text-white dark:text-green-400" />
               </div>
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="overflow-hidden whitespace-nowrap"
               >
-                <h1 className="text-lg font-black text-white uppercase tracking-widest font-headline">
+                <h1 className="text-base font-bold text-gray-900 dark:text-white">
                   HMI TMKP
                 </h1>
-                <p className="text-[10px] text-green-400/80 font-medium uppercase tracking-tighter">
-                  Administrative Excellence
-                </p>
               </motion.div>
             </div>
             <button
               onClick={onToggle}
-              className="text-white/40 hover:text-white transition-colors p-1.5 rounded-md hover:bg-white/10 ml-4 group"
+              className="text-gray-400 hover:text-gray-700 dark:text-white/40 dark:hover:text-white transition-colors p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-white/10 group"
               title="Collapse Sidebar"
             >
               <motion.div whileHover={{ x: -2 }} whileTap={{ scale: 0.9 }}>
@@ -79,12 +88,12 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           </>
         ) : (
           <>
-            <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0 border border-green-500/30 mb-2">
-              <Sun className="w-6 h-6 text-green-400" />
+            <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center shrink-0 dark:bg-green-500/15 dark:border dark:border-green-500/30 mb-2">
+              <Sun className="w-5 h-5 text-white dark:text-green-400" />
             </div>
             <button
               onClick={onToggle}
-              className="text-white/40 hover:text-white transition-colors p-1 rounded-md hover:bg-white/10 mb-2 group"
+              className="text-gray-400 hover:text-gray-700 dark:text-white/40 dark:hover:text-white transition-colors p-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/10 mb-2 group"
               title="Expand Sidebar"
             >
               <motion.div whileHover={{ x: 2 }} whileTap={{ scale: 0.9 }}>
@@ -96,7 +105,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </div>
 
       <nav className="flex flex-col gap-1 flex-1">
-        {visibleNavItems.map((item) => (
+        {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
@@ -104,15 +113,13 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             title={collapsed ? item.label : ""}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-4 py-3 transition-all font-headline uppercase tracking-wider text-[11px] font-semibold rounded-xl overflow-hidden",
-                isActive
-                  ? "text-green-400 border-l-4 border-green-400 bg-green-500/10 shadow-[inset_0_0_20px_rgba(34,197,94,0.1)]"
-                  : "text-white/60 hover:bg-white/5 hover:text-white",
-                collapsed && "justify-center px-0 border-l-0",
+                navItemBase,
+                isActive ? activeNav : inactiveNav,
+                collapsed && "justify-center px-0",
               )
             }
           >
-            <item.icon className={cn("w-4 h-4 shrink-0")} />
+            <item.icon className="w-4 h-4 shrink-0" />
             {!collapsed && (
               <motion.span
                 initial={{ opacity: 0 }}
@@ -126,60 +133,66 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="mt-auto flex flex-col gap-4">
+      <div className="mt-auto flex flex-col gap-1 pt-3 border-t border-gray-200 dark:border-white/10">
+        <NavLink
+          to="/dashboard/settings"
+          title={collapsed ? "Settings" : ""}
+          className={({ isActive }) =>
+            cn(
+              navItemBase,
+              isActive ? activeNav : inactiveNav,
+              collapsed && "justify-center px-0",
+            )
+          }
+        >
+          <Settings className="w-4 h-4 shrink-0" />
+          {!collapsed && <span>Pengaturan</span>}
+        </NavLink>
+
+        <button
+          title={collapsed ? "Logout" : ""}
+          className={cn(
+            navItemBase,
+            "text-gray-700 hover:text-red-600 hover:bg-red-50 dark:text-white/60 dark:hover:text-red-400 dark:hover:bg-red-500/10",
+            collapsed && "justify-center px-0",
+          )}
+          onClick={() => {
+            logout();
+            navigate('/login', { replace: true });
+          }}
+        >
+          <LogOut className="w-4 h-4 shrink-0" />
+          {!collapsed && <span>Logout</span>}
+        </button>
+
         <div
           className={cn(
-            "p-3 bg-white/5 rounded-2xl border border-white/10 flex items-center gap-3 overflow-hidden backdrop-blur-md",
-            collapsed && "justify-center p-2",
+            navItemBase,
+            inactiveNav,
+            "cursor-default",
+            collapsed && "justify-center px-0",
           )}
         >
-          <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXZiGgRrcnQ1NBprCyWvH1uEtkcfL8g1CIlXk0yC7DUEm1c63K7lQNIc2YwrUc-m6mwX7lGbCXu4LZJ-S8-f6sIlJpsNZWOp68eNomImnzamKLfjZnu3jODTYADnMNjQ8uE6N0UufABE-mPOlDl-vK5nScWX6Qwk7Z3FqZ9s4F51QbciFdeRuRb0d0MBvVVk1ooebswT60wvXNo4i60TVGIZMYGwkoNpOeytWQ1bqo0AIwuvYCe_VyKCOMqLxqESCgRQoAtjToYvE"
-            alt="User Avatar"
-            className="w-9 h-9 rounded-full bg-green-500/20 shrink-0 border border-green-500/20"
-          />
+          <div className="w-7 h-7 rounded-full bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 shrink-0 flex items-center justify-center text-xs font-bold">
+            {(session?.name || 'AT').split(' ').map((n) => n[0]).join('').slice(0, 2)}
+          </div>
           {!collapsed && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="overflow-hidden"
+              className="overflow-hidden flex-1 flex items-center justify-between min-w-0"
             >
-              <p className="text-xs font-bold text-white truncate">
-                {session?.name || 'Admin Utama'}
-              </p>
-              <p className="text-[10px] text-green-400 truncate">
-                Admin Panel
-              </p>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-tight">
+                  {session?.name || 'Admin TMKP'}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-white/50 truncate leading-tight">
+                  Admin Panel
+                </p>
+              </div>
+              <ChevronDown className="w-4 h-4 text-gray-400 dark:text-white/40 shrink-0" />
             </motion.div>
           )}
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <NavLink
-            to="/dashboard/settings"
-            title={collapsed ? "Settings" : ""}
-            className={cn(
-              "flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white transition-colors font-headline uppercase tracking-wider text-[10px] font-semibold rounded-lg hover:bg-white/5",
-              collapsed && "justify-center px-0",
-            )}
-          >
-            <Settings className="w-4 h-4 shrink-0" />
-            {!collapsed && <span>Settings</span>}
-          </NavLink>
-          <button
-            title={collapsed ? "Logout" : ""}
-            className={cn(
-              "flex items-center gap-3 px-4 py-2 text-white/50 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors font-headline uppercase tracking-wider text-[10px] font-semibold",
-              collapsed && "justify-center px-0",
-            )}
-            onClick={() => {
-              logout();
-              navigate('/login', { replace: true });
-            }}
-          >
-            <LogOut className="w-4 h-4 shrink-0" />
-            {!collapsed && <span>Logout</span>}
-          </button>
         </div>
       </div>
     </aside>

@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { DashboardStats, FinancialRecord, Member, VerificationRequest } from '../types';
+import { BorrowingRequest, BorrowingStatus, DashboardStats, FinancialRecord, Member, VerificationRequest } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || 
@@ -249,6 +249,86 @@ export const verificationService = {
   getPendingRequests: async (): Promise<VerificationRequest[]> => {
     const requests = await verificationService.getRequests();
     return requests.filter((request) => request.status === 'PENDING');
+  },
+};
+
+type BorrowingRow = {
+  id: string | number;
+  requester_name: string;
+  requester_email: string;
+  requester_phone: string | null;
+  requester_affiliation: string | null;
+  item_name: string;
+  quantity: number;
+  purpose: string;
+  borrow_date: string;
+  return_date: string;
+  notes: string | null;
+  status: BorrowingStatus;
+  admin_note: string | null;
+  created_at: string;
+};
+
+const mapBorrowing = (row: BorrowingRow): BorrowingRequest => ({
+  id: String(row.id),
+  requester_name: row.requester_name,
+  requester_email: row.requester_email,
+  requester_phone: row.requester_phone ?? undefined,
+  requester_affiliation: row.requester_affiliation ?? undefined,
+  item_name: row.item_name,
+  quantity: Number(row.quantity),
+  purpose: row.purpose,
+  borrow_date: row.borrow_date,
+  return_date: row.return_date,
+  notes: row.notes ?? undefined,
+  status: row.status,
+  admin_note: row.admin_note ?? undefined,
+  created_at: row.created_at,
+});
+
+export const borrowingService = {
+  createRequest: async (request: Partial<BorrowingRequest>): Promise<BorrowingRequest> => {
+    const payload = {
+      requester_name: request.requester_name,
+      requester_email: request.requester_email,
+      requester_phone: request.requester_phone ?? null,
+      requester_affiliation: request.requester_affiliation ?? null,
+      item_name: request.item_name,
+      quantity: request.quantity,
+      purpose: request.purpose,
+      borrow_date: request.borrow_date,
+      return_date: request.return_date,
+      notes: request.notes ?? null,
+      status: request.status || 'PENDING',
+    };
+    const { data, error } = await supabase
+      .from('borrowing_requests')
+      .insert(payload)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return mapBorrowing(data as BorrowingRow);
+  },
+
+  getRequests: async (): Promise<BorrowingRequest[]> => {
+    const { data, error } = await supabase
+      .from('borrowing_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return (data as BorrowingRow[]).map(mapBorrowing);
+  },
+
+  updateStatus: async (
+    id: string,
+    status: BorrowingStatus,
+    adminNote?: string,
+  ): Promise<void> => {
+    const payload: { status: BorrowingStatus; admin_note?: string | null } = { status };
+    if (adminNote !== undefined) payload.admin_note = adminNote || null;
+    const { error } = await supabase.from('borrowing_requests').update(payload).eq('id', id);
+    if (error) throw error;
   },
 };
 

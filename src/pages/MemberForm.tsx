@@ -127,24 +127,24 @@ export default function MemberForm() {
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight">Formulir Anggota Baru</h2>
-          <p className="text-sm text-white/50">Lengkapi data diri calon anggota HMI TMKP</p>
+          <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Formulir Anggota Baru</h2>
+          <p className="text-sm text-gray-500 dark:text-white/50">Lengkapi data diri calon anggota HMI TMKP</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-6">
-          <div className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-2xl flex flex-col items-center text-center">
-            <div className="w-32 h-32 rounded-2xl bg-white/10 border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-white/40 mb-4 group hover:border-green-500 hover:text-green-400 transition-all cursor-pointer">
+          <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-gray-200 dark:border-white/10 shadow-2xl flex flex-col items-center text-center">
+            <div className="w-32 h-32 rounded-2xl bg-gray-200 dark:bg-white/10 border-2 border-dashed border-gray-200 dark:border-white/10 flex flex-col items-center justify-center text-gray-400 dark:text-white/40 mb-4 group hover:border-green-500 hover:text-green-400 transition-all cursor-pointer">
               <Upload className="w-8 h-8 mb-2" />
               <span className="text-[10px] font-bold uppercase tracking-widest">Upload Foto</span>
             </div>
-            <p className="text-[10px] text-white/40 leading-relaxed">Format JPG/PNG, Maksimal 2MB. Gunakan latar belakang polos.</p>
+            <p className="text-[10px] text-gray-400 dark:text-white/40 leading-relaxed">Format JPG/PNG, Maksimal 2MB. Gunakan latar belakang polos.</p>
           </div>
           
           <div className="bg-green-500/5 p-6 rounded-xl border border-green-500/10">
             <h4 className="text-xs font-bold text-green-400 uppercase tracking-widest mb-3">Panduan Pengisian</h4>
-            <ul className="text-[11px] text-white/70 space-y-2 list-disc pl-4">
+            <ul className="text-[11px] text-gray-700 dark:text-white/70 space-y-2 list-disc pl-4">
               <li>Pastikan NIM sesuai dengan kartu mahasiswa</li>
               <li>Gunakan email institusi jika tersedia</li>
               <li>Alamat domisili saat ini di Semarang</li>
@@ -153,7 +153,7 @@ export default function MemberForm() {
         </div>
 
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-white/5 p-8 rounded-xl border border-white/10 shadow-2xl">
+          <div className="bg-white dark:bg-white/5 p-8 rounded-xl border border-gray-200 dark:border-white/10 shadow-2xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
               <FormField label="Nama Lengkap" icon={User} error={validationErrors.name}>
                 <Input 
@@ -220,7 +220,7 @@ export default function MemberForm() {
               <div className="md:col-span-2">
                 <FormField label="Jurusan">
                   <select 
-                    className="w-full h-10 rounded border border-white/10 bg-white/5 px-3 text-sm outline-none focus:ring-2 focus:ring-green-500/20"
+                    className="w-full h-10 rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 text-sm outline-none focus:ring-2 focus:ring-green-500/20"
                     value={formData.jurusan}
                     onChange={e => handleFieldChange('jurusan', e.target.value)}
                   >
@@ -234,7 +234,7 @@ export default function MemberForm() {
               <div className="md:col-span-2">
                 <FormField label="Alamat Domisili" icon={MapPin}>
                   <textarea 
-                    className="w-full rounded border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500/20 min-h-[100px]"
+                    className="w-full rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500/20 min-h-[100px]"
                     placeholder="Jl. Prof. Sudarto No. 13, Tembalang..."
                     value={formData.address}
                     onChange={e => handleFieldChange('address', e.target.value)}
@@ -243,7 +243,7 @@ export default function MemberForm() {
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/5">
+            <div className="mt-8 pt-6 border-t border-gray-100 dark:border-white/5">
               {errorMessage && (
                 <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
@@ -271,7 +271,7 @@ export default function MemberForm() {
 function FormField({ label, icon: Icon, children, error }: any) {
   return (
     <div className="space-y-1.5">
-      <label className="text-[10px] font-bold text-white/50 uppercase tracking-widest flex items-center gap-2">
+      <label className="text-[10px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest flex items-center gap-2">
         {Icon && <Icon className="w-3 h-3" />}
         {label}
       </label>

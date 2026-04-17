@@ -65,25 +65,25 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <section>
-        <h2 className="text-2xl font-extrabold text-white font-headline tracking-tight">Settings</h2>
-        <p className="text-white/50">Pengaturan akun, sesi login, dan AI Agent</p>
+        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white font-headline tracking-tight">Settings</h2>
+        <p className="text-gray-500 dark:text-white/50">Pengaturan akun, sesi login, dan AI Agent</p>
       </section>
 
       {/* Account Info */}
-      <div className="bg-white/5 rounded-xl border border-white/10 shadow-2xl p-6 space-y-5">
+      <div className="bg-white dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 shadow-2xl p-6 space-y-5">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <h3 className="text-lg font-bold text-white">Informasi Akun</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Informasi Akun</h3>
           <Badge variant="secondary">ADMIN</Badge>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-lg border border-white/10 p-4">
-            <p className="text-xs uppercase tracking-widest text-white/50 font-semibold">Nama</p>
-            <p className="text-sm font-bold text-white mt-1">{session?.name || '-'}</p>
+          <div className="rounded-lg border border-gray-200 dark:border-white/10 p-4">
+            <p className="text-xs uppercase tracking-widest text-gray-500 dark:text-white/50 font-semibold">Nama</p>
+            <p className="text-sm font-bold text-gray-900 dark:text-white mt-1">{session?.name || '-'}</p>
           </div>
-          <div className="rounded-lg border border-white/10 p-4">
-            <p className="text-xs uppercase tracking-widest text-white/50 font-semibold">Email</p>
-            <p className="text-sm font-bold text-white mt-1">{session?.email || '-'}</p>
+          <div className="rounded-lg border border-gray-200 dark:border-white/10 p-4">
+            <p className="text-xs uppercase tracking-widest text-gray-500 dark:text-white/50 font-semibold">Email</p>
+            <p className="text-sm font-bold text-gray-900 dark:text-white mt-1">{session?.email || '-'}</p>
           </div>
         </div>
 
@@ -101,19 +101,19 @@ export default function SettingsPage() {
       </div>
 
       {/* AI Agent Config */}
-      <div className="bg-white/5 rounded-xl border border-white/10 shadow-2xl p-6 space-y-5">
+      <div className="bg-white dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 shadow-2xl p-6 space-y-5">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center border border-green-500/20">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">AI Agent</h3>
-            <p className="text-xs text-white/50">Konfigurasi model AI untuk chatbot asisten admin</p>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">AI Agent</h3>
+            <p className="text-xs text-gray-500 dark:text-white/50">Konfigurasi model AI untuk chatbot asisten admin</p>
           </div>
         </div>
 
         <div className="space-y-3">
-          <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Pilih Model AI</p>
+          <p className="text-[10px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">Pilih Model AI</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {AI_MODELS.map((model) => (
               <button
@@ -122,19 +122,19 @@ export default function SettingsPage() {
                 className={`relative rounded-xl border p-4 text-left transition-all cursor-pointer ${
                   selectedModel === model.id
                     ? 'border-green-500/50 bg-green-500/5 ring-1 ring-green-500/20'
-                    : 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20'
+                    : 'border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-gray-200 dark:bg-white/10 hover:border-gray-300 dark:border-white/20'
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      selectedModel === model.id ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/50'
+                      selectedModel === model.id ? 'bg-green-500/20 text-green-400' : 'bg-gray-200 dark:bg-white/10 text-gray-500 dark:text-white/50'
                     }`}>
                       <Bot className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-white">{model.name}</p>
-                      <p className="text-[10px] text-white/40 mt-0.5">{model.description}</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">{model.name}</p>
+                      <p className="text-[10px] text-gray-400 dark:text-white/40 mt-0.5">{model.description}</p>
                     </div>
                   </div>
                   {selectedModel === model.id && (
@@ -143,17 +143,17 @@ export default function SettingsPage() {
                     </div>
                   )}
                 </div>
-                <p className="text-[9px] text-white/30 font-mono mt-2 truncate">{model.id}</p>
+                <p className="text-[9px] text-gray-300 dark:text-white/30 font-mono mt-2 truncate">{model.id}</p>
               </button>
             ))}
           </div>
         </div>
 
-        <div className="space-y-3 pt-4 border-t border-white/10 mt-4">
-          <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">OpenRouter API Key</p>
+        <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-white/10 mt-4">
+          <p className="text-[10px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">OpenRouter API Key</p>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <KeyRound className="h-4 w-4 text-white/40" />
+              <KeyRound className="h-4 w-4 text-gray-400 dark:text-white/40" />
             </div>
             <Input
               type="password"
@@ -164,13 +164,13 @@ export default function SettingsPage() {
               disabled={loading}
             />
           </div>
-          <p className="text-xs text-white/40">Kunci API akan dienkripsi sebelum disimpan ke dalam database untuk alasan keamanan.</p>
+          <p className="text-xs text-gray-400 dark:text-white/40">Kunci API akan dienkripsi sebelum disimpan ke dalam database untuk alasan keamanan.</p>
         </div>
 
         <div className="pt-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs text-white/50">Powered by OpenRouter</span>
+            <span className="text-xs text-gray-500 dark:text-white/50">Powered by OpenRouter</span>
           </div>
           <Button onClick={handleSaveModel} className="gap-2">
             {saved ? <Check className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}

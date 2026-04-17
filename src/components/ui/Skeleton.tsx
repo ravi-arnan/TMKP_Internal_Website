@@ -8,7 +8,7 @@ interface SkeletonProps {
 
 export function Skeleton({ className, style }: SkeletonProps) {
   return (
-    <div className={cn('animate-pulse bg-white/10 rounded', className)} style={style} />
+    <div className={cn('animate-pulse bg-gray-200 dark:bg-white/10 rounded', className)} style={style} />
   );
 }
 
@@ -30,7 +30,7 @@ export function TableSkeleton({ rows = 5, columns = 6 }: { rows?: number; column
 
 export function StatCardSkeleton() {
   return (
-    <div className="bg-white/5 p-6 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-md space-y-4">
+    <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm dark:bg-white/5 dark:border-white/10 dark:shadow-2xl dark:backdrop-blur-md space-y-4">
       <div className="flex items-center justify-between">
         <Skeleton className="w-12 h-12 rounded-xl" />
         <Skeleton className="w-16 h-6 rounded-full" />
@@ -47,7 +47,7 @@ export function StatCardSkeleton() {
 
 export function ChartSkeleton() {
   return (
-    <div className="bg-white/5 p-8 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-md">
+    <div className="bg-white border border-gray-200 p-8 rounded-2xl shadow-sm dark:bg-white/5 dark:border-white/10 dark:shadow-2xl dark:backdrop-blur-md">
       <div className="flex justify-between items-start mb-8">
         <div className="space-y-2">
           <Skeleton className="w-48 h-6" />

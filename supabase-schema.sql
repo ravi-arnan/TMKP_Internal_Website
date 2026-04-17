@@ -51,6 +51,25 @@ create table if not exists public.app_settings (
   updated_at timestamptz not null default now()
 );
 
+-- Tabel permintaan peminjaman barang/inventaris komisariat
+create table if not exists public.borrowing_requests (
+  id uuid primary key default gen_random_uuid(),
+  requester_name text not null,
+  requester_email text not null,
+  requester_phone text,
+  requester_affiliation text,
+  item_name text not null,
+  quantity integer not null check (quantity > 0),
+  purpose text not null,
+  borrow_date date not null,
+  return_date date not null,
+  notes text,
+  status text not null default 'PENDING'
+    check (status in ('PENDING','APPROVED','REJECTED','RETURNED')),
+  admin_note text,
+  created_at timestamptz not null default now()
+);
+
 -- Index untuk performa query
 create index if not exists idx_members_status on public.members(status);
 create index if not exists idx_members_angkatan on public.members(angkatan);
@@ -59,6 +78,8 @@ create index if not exists idx_financial_date on public.financial_records(date d
 create index if not exists idx_financial_type on public.financial_records(type);
 create index if not exists idx_verification_status on public.verification_requests(status);
 create index if not exists idx_verification_member on public.verification_requests(member_id);
+create index if not exists idx_borrowing_status on public.borrowing_requests(status);
+create index if not exists idx_borrowing_created_at on public.borrowing_requests(created_at desc);
 
 -- ============================================
 -- Row Level Security (RLS) Policies
@@ -158,6 +179,30 @@ create policy "Allow public update app_settings"
 
 create policy "Allow public delete app_settings"
   on public.app_settings for delete
+  to anon, authenticated
+  using (true);
+
+-- Borrowing Requests
+alter table public.borrowing_requests enable row level security;
+
+create policy "Allow public read borrowing_requests"
+  on public.borrowing_requests for select
+  to anon, authenticated
+  using (true);
+
+create policy "Allow public insert borrowing_requests"
+  on public.borrowing_requests for insert
+  to anon, authenticated
+  with check (true);
+
+create policy "Allow public update borrowing_requests"
+  on public.borrowing_requests for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
+create policy "Allow public delete borrowing_requests"
+  on public.borrowing_requests for delete
   to anon, authenticated
   using (true);
 

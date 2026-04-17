@@ -134,8 +134,8 @@ export default function MemberEdit() {
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div className="flex-1">
-          <h2 className="text-2xl font-black text-white tracking-tight">Edit Anggota</h2>
-          <p className="text-sm text-white/50">Perbarui data anggota HMI TMKP</p>
+          <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Edit Anggota</h2>
+          <p className="text-sm text-gray-500 dark:text-white/50">Perbarui data anggota HMI TMKP</p>
         </div>
         <Badge variant={formData.status === 'AKTIF' ? 'success' : formData.status === 'ALUMNI' ? 'info' : 'default'}>
           {formData.status}
@@ -144,17 +144,17 @@ export default function MemberEdit() {
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-6">
-          <div className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-2xl flex flex-col items-center text-center">
-            <div className="w-32 h-32 rounded-2xl bg-green-500/10 text-green-400 shadow-lg border-2 border-white/10 flex items-center justify-center text-2xl font-bold mb-4">
+          <div className="bg-white dark:bg-white/5 p-6 rounded-xl border border-gray-200 dark:border-white/10 shadow-2xl flex flex-col items-center text-center">
+            <div className="w-32 h-32 rounded-2xl bg-green-500/10 text-green-400 shadow-lg border-2 border-gray-200 dark:border-white/10 flex items-center justify-center text-2xl font-bold mb-4">
               {member?.photo_url ? (
                 <img src={member.photo_url} alt={formData.name} className="w-full h-full object-cover rounded-2xl" />
               ) : (
                 formData.name.split(' ').map(n => n[0]).join('').slice(0, 2)
               )}
             </div>
-            <p className="text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Status Keanggotaan</p>
+            <p className="text-xs font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest mb-2">Status Keanggotaan</p>
             <select
-              className="w-full rounded border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500/20"
+              className="w-full rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500/20"
               value={formData.status}
               onChange={e => setFormData({...formData, status: e.target.value as Member['status']})}
             >
@@ -194,7 +194,7 @@ export default function MemberEdit() {
         </div>
 
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-white/5 p-8 rounded-xl border border-white/10 shadow-2xl">
+          <div className="bg-white dark:bg-white/5 p-8 rounded-xl border border-gray-200 dark:border-white/10 shadow-2xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
               <FormField label="Nama Lengkap" icon={User}>
                 <Input 
@@ -261,7 +261,7 @@ export default function MemberEdit() {
 
               <FormField label="Program Studi">
                 <select 
-                  className="w-full h-10 rounded border border-white/10 bg-white/5 px-3 text-sm outline-none focus:ring-2 focus:ring-green-500/20"
+                  className="w-full h-10 rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 text-sm outline-none focus:ring-2 focus:ring-green-500/20"
                   value={formData.prodi || formData.jurusan}
                   onChange={e => setFormData({...formData, prodi: e.target.value, jurusan: e.target.value})}
                 >
@@ -284,7 +284,7 @@ export default function MemberEdit() {
               <div className="md:col-span-2">
                 <FormField label="Alamat Domisili" icon={MapPin}>
                   <textarea 
-                    className="w-full rounded border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500/20 min-h-[100px]"
+                    className="w-full rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500/20 min-h-[100px]"
                     placeholder="Jl. Prof. Sudarto No. 13, Tembalang..."
                     value={formData.address}
                     onChange={e => setFormData({...formData, address: e.target.value})}
@@ -293,7 +293,7 @@ export default function MemberEdit() {
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/5 flex justify-between items-center">
+            <div className="mt-8 pt-6 border-t border-gray-100 dark:border-white/5 flex justify-between items-center">
               {errorMessage && (
                 <p className="text-sm text-red-600">{errorMessage}</p>
               )}
@@ -317,7 +317,7 @@ export default function MemberEdit() {
 function FormField({ label, icon: Icon, children }: any) {
   return (
     <div className="space-y-1.5">
-      <label className="text-[10px] font-bold text-white/50 uppercase tracking-widest flex items-center gap-2">
+      <label className="text-[10px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest flex items-center gap-2">
         {Icon && <Icon className="w-3 h-3" />}
         {label}
       </label>

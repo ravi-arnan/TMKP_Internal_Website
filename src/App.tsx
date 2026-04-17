@@ -10,6 +10,8 @@ import Organization from './pages/Organization';
 import Events from './pages/Events';
 import SettingsPage from './pages/Settings';
 import PublicSubmission from './pages/PublicSubmission';
+import PublicBorrowing from './pages/PublicBorrowing';
+import BorrowingReview from './pages/BorrowingReview';
 import Frontpage from './pages/Frontpage';
 import { useAuth } from './lib/auth-context';
 
@@ -28,6 +30,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Frontpage />} />
         <Route path="/submission" element={<PublicSubmission />} />
+        <Route path="/peminjaman" element={<PublicBorrowing />} />
 
         <Route element={<RequireAuth />}>
           <Route path="/dashboard" element={<Layout />}>
@@ -41,6 +44,7 @@ export default function App() {
             <Route path="members/new" element={<MemberForm />} />
             <Route path="members/:id/edit" element={<MemberEdit />} />
             <Route path="verification" element={<Verification />} />
+            <Route path="borrowing" element={<BorrowingReview />} />
           </Route>
         </Route>
 

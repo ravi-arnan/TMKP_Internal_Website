@@ -32,17 +32,17 @@ export default function ConfirmationModal({
     danger: {
       icon: <AlertTriangle className="w-6 h-6 text-red-600" />,
       bg: 'bg-red-50',
-      button: 'bg-red-600 hover:bg-red-700 text-white'
+      button: 'bg-red-600 hover:bg-red-700 text-gray-900 dark:text-white'
     },
     warning: {
       icon: <AlertTriangle className="w-6 h-6 text-amber-600" />,
       bg: 'bg-amber-50',
-      button: 'bg-amber-600 hover:bg-amber-700 text-white'
+      button: 'bg-amber-600 hover:bg-amber-700 text-gray-900 dark:text-white'
     },
     primary: {
       icon: <AlertTriangle className="w-6 h-6 text-primary" />,
       bg: 'bg-primary/5',
-      button: 'bg-primary hover:bg-primary/90 text-white'
+      button: 'bg-primary hover:bg-primary/90 text-gray-900 dark:text-white'
     }
   };
 

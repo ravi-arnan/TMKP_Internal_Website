@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-headline: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -9,25 +11,24 @@
   --color-primary-foreground: #ffffff;
   --color-accent-gold: #d4a017;
   --color-secondary: #d4a017;
-  
+
   --color-background: #f8fafc;
   --color-surface: #ffffff;
-  
+
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
 }
 
 @layer base {
   body {
-    @apply bg-background text-slate-900 font-body;
+    @apply bg-white text-gray-900 dark:bg-black dark:text-white font-body;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline;
   }
 }
 
-/* Dark mode scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -36,14 +37,19 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Hide number input spinners */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -53,17 +59,28 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Dark mode select & option styling */
 select {
+  color-scheme: light;
+}
+.dark select {
   color-scheme: dark;
 }
 select option {
+  background-color: #ffffff;
+  color: #111827;
+  padding: 8px 12px;
+}
+.dark select option {
   background-color: #0a0a0a;
   color: #ffffff;
-  padding: 8px 12px;
 }
 select option:hover,
 select option:checked {
+  background-color: #dcfce7;
+  color: #166534;
+}
+.dark select option:hover,
+.dark select option:checked {
   background-color: #166534;
   color: #ffffff;
 }

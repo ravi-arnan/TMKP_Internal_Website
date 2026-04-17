@@ -54,8 +54,8 @@ export default function Organization() {
   return (
     <div className="space-y-8">
       <section>
-        <h2 className="text-2xl font-extrabold text-white font-headline tracking-tight">Kepengurusan Komisariat</h2>
-        <p className="text-white/50">Ringkasan struktur inti dan distribusi anggota berdasarkan program studi</p>
+        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white font-headline tracking-tight">Kepengurusan Komisariat</h2>
+        <p className="text-gray-500 dark:text-white/50">Ringkasan struktur inti dan distribusi anggota berdasarkan program studi</p>
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -66,38 +66,38 @@ export default function Organization() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden relative">
+        <div className="lg:col-span-2 bg-white dark:bg-white dark:bg-white/5 dark:backdrop-blur-md rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden relative">
           <div className="absolute -left-10 -top-10 w-40 h-40 bg-green-500/5 rounded-full blur-[60px] pointer-events-none"></div>
           
-          <div className="px-6 py-5 border-b border-white/10 relative z-10">
-            <h3 className="text-lg font-bold text-white">Struktur Inti</h3>
-            <p className="text-xs text-white/50">Pengurus utama aktif periode berjalan</p>
+          <div className="px-6 py-5 border-b border-gray-200 dark:border-white/10 relative z-10">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Struktur Inti</h3>
+            <p className="text-xs text-gray-500 dark:text-white/50">Pengurus utama aktif periode berjalan</p>
           </div>
-          <div className="divide-y divide-white/10 relative z-10">
+          <div className="divide-y divide-gray-200 dark:divide-white/10 relative z-10">
             {officerCore.map((officer) => (
-              <div key={officer.position} className="px-6 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+              <div key={officer.position} className="px-6 py-4 flex items-center justify-between gap-4 hover:bg-white dark:bg-white/5 transition-colors">
                 <div>
-                  <p className="text-sm font-bold text-white">{officer.position}</p>
-                  <p className="text-xs text-white/50">{officer.name}</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">{officer.position}</p>
+                  <p className="text-xs text-gray-500 dark:text-white/50">{officer.name}</p>
                 </div>
-                <Badge variant="secondary" className="bg-white/10 text-white border-white/20">{officer.period}</Badge>
+                <Badge variant="secondary" className="bg-gray-200 dark:bg-white/10 text-gray-900 dark:text-white border-gray-300 dark:border-white/20">{officer.period}</Badge>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl p-6 relative overflow-hidden">
+        <div className="bg-white dark:bg-white dark:bg-white/5 dark:backdrop-blur-md rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl p-6 relative overflow-hidden">
           <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-green-500/5 rounded-full blur-[60px] pointer-events-none"></div>
           
           <div className="flex items-center gap-2 mb-5 relative z-10">
             <Network className="w-4 h-4 text-green-400" />
-            <h3 className="text-sm font-bold text-white">Prodi Terbanyak</h3>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white">Prodi Terbanyak</h3>
           </div>
 
           {loading ? (
-            <p className="text-sm text-white/50 relative z-10">Memuat komposisi anggota...</p>
+            <p className="text-sm text-gray-500 dark:text-white/50 relative z-10">Memuat komposisi anggota...</p>
           ) : topDepartments.length === 0 ? (
-            <p className="text-sm text-white/50 relative z-10">Belum ada data anggota.</p>
+            <p className="text-sm text-gray-500 dark:text-white/50 relative z-10">Belum ada data anggota.</p>
           ) : (
             <ul className="space-y-4 relative z-10">
               {topDepartments.map((department) => {
@@ -105,10 +105,10 @@ export default function Organization() {
                 return (
                   <li key={department.name}>
                     <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="font-semibold text-white/80">{department.name}</span>
-                      <span className="text-white/50">{department.count} orang</span>
+                      <span className="font-semibold text-gray-700 dark:text-white/80">{department.name}</span>
+                      <span className="text-gray-500 dark:text-white/50">{department.count} orang</span>
                     </div>
-                    <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
                       <div className="h-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]" style={{ width: `${ratio}%` }} />
                     </div>
                   </li>
@@ -134,7 +134,7 @@ function StatCard({
   variant?: 'primary' | 'secondary' | 'success' | 'danger';
 }) {
   return (
-    <div className="bg-white/5 backdrop-blur-md p-5 rounded-2xl border border-white/10 flex items-center justify-between shadow-2xl group overflow-hidden relative">
+    <div className="bg-white dark:bg-white dark:bg-white/5 dark:backdrop-blur-md p-5 rounded-2xl border border-gray-200 dark:border-white/10 flex items-center justify-between shadow-2xl group overflow-hidden relative">
       <div className={cn(
         "absolute -right-2 -top-2 w-20 h-20 rounded-full blur-[30px] transition-all duration-500",
         variant === 'secondary' && "bg-emerald-500/10 group-hover:bg-emerald-500/20",
@@ -143,8 +143,8 @@ function StatCard({
         variant === 'primary' && "bg-green-500/10 group-hover:bg-green-500/20",
       )}></div>
       <div className="relative z-10">
-        <p className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-1">{label}</p>
-        <p className="text-2xl font-black text-white">{value.toLocaleString()}</p>
+        <p className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/50 font-bold mb-1">{label}</p>
+        <p className="text-2xl font-black text-gray-900 dark:text-white">{value.toLocaleString()}</p>
       </div>
       <div
         className={cn(

@@ -227,20 +227,20 @@ export default function PublicSubmission() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#000000] text-white font-['Instrument_Sans',sans-serif] selection:bg-green-500/30">
+    <div className="relative min-h-screen bg-white dark:bg-[#000000] text-gray-900 dark:text-white font-['Instrument_Sans',sans-serif] selection:bg-green-500/30">
       
       {/* Decorative Gradients */}
       <div className="fixed top-[-20%] left-[-10%] w-[600px] h-[600px] bg-green-900/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[10%] w-[500px] h-[500px] bg-emerald-900/10 blur-[120px] rounded-full pointer-events-none" />
 
       {/* Header */}
-      <nav className="relative z-50 px-6 py-4 flex items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-md">
+      <nav className="relative z-50 px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5 bg-white dark:bg-white dark:bg-black/40 dark:backdrop-blur-md">
         <Link to="/" className="flex items-center gap-2 group">
           <Sun className="w-6 h-6 text-green-400 group-hover:scale-110 transition-transform duration-300" />
-          <span className="font-bold tracking-wide text-white">HMI TMKP</span>
+          <span className="font-bold tracking-wide text-gray-900 dark:text-white">HMI TMKP</span>
         </Link>
         <Link to="/">
-          <button className="flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white transition-colors duration-300 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10">
+          <button className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-white/70 hover:text-gray-900 dark:text-white transition-colors duration-300 bg-white dark:bg-white/5 hover:bg-gray-200 dark:bg-white/10 px-4 py-2 rounded-full border border-gray-200 dark:border-white/10">
             <ArrowLeft className="w-4 h-4" />
             Kembali ke Beranda
           </button>
@@ -259,10 +259,10 @@ export default function PublicSubmission() {
           >
             <div>
               <p className="text-green-400 font-bold tracking-[0.25em] text-xs uppercase mb-4">Administrasi Internal</p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-['Instrument_Serif',serif] italic leading-tight text-white mb-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-['Instrument_Serif',serif] italic leading-tight text-gray-900 dark:text-white mb-6">
                 Formulir <br/> Pendataan Anggota
               </h1>
-              <p className="text-white/60 text-lg leading-relaxed max-w-md">
+              <p className="text-gray-600 dark:text-white/60 text-lg leading-relaxed max-w-md">
                 Lengkapi data profil Anda untuk diregistrasikan ke sistem administrasi HMI TMKP. Seluruh data dilindungi dan digunakan secara internal.
               </p>
             </div>
@@ -276,7 +276,7 @@ export default function PublicSubmission() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+            <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl p-6 md:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden">
               {/* Form internal subtle gradient */}
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent pointer-events-none" />
 
@@ -294,7 +294,7 @@ export default function PublicSubmission() {
                         placeholder="Cth: Ronaldo"
                         value={formData.name}
                         onChange={(event) => handleFieldChange('name', event.target.value)}
-                        className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.name ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' : ''}`}
+                        className={`bg-white dark:bg-black/40 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.name ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' : ''}`}
                         required
                       />
                     </FormField>
@@ -307,7 +307,7 @@ export default function PublicSubmission() {
                         placeholder="ronaldo@gmail.com"
                         value={formData.email}
                         onChange={(event) => handleFieldChange('email', event.target.value)}
-                        className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.email ? 'border-red-500/50' : ''}`}
+                        className={`bg-white dark:bg-black/40 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.email ? 'border-red-500/50' : ''}`}
                         required
                       />
                     </FormField>
@@ -319,7 +319,7 @@ export default function PublicSubmission() {
                         placeholder="2005551010"
                         value={formData.nim}
                         onChange={(event) => handleFieldChange('nim', event.target.value)}
-                        className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.nim ? 'border-red-500/50' : ''}`}
+                        className={`bg-white dark:bg-black/40 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.nim ? 'border-red-500/50' : ''}`}
                         required
                       />
                     </FormField>
@@ -331,7 +331,7 @@ export default function PublicSubmission() {
                         placeholder="081234567890"
                         value={formData.phone}
                         onChange={(event) => handleFieldChange('phone', event.target.value)}
-                        className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.phone ? 'border-red-500/50' : ''}`}
+                        className={`bg-white dark:bg-black/40 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.phone ? 'border-red-500/50' : ''}`}
                       />
                     </FormField>
                   </motion.div>
@@ -342,7 +342,7 @@ export default function PublicSubmission() {
                         placeholder="2024"
                         value={formData.angkatan}
                         onChange={(event) => handleFieldChange('angkatan', event.target.value)}
-                        className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.angkatan ? 'border-red-500/50' : ''}`}
+                        className={`bg-white dark:bg-black/40 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.angkatan ? 'border-red-500/50' : ''}`}
                         maxLength={4}
                         required
                       />
@@ -351,15 +351,15 @@ export default function PublicSubmission() {
                     <FormField label="Semester" error={validationErrors.semester}>
                       <div className="relative">
                         <select
-                          className="w-full h-10 rounded-md border border-white/10 bg-black/40 px-3 text-sm text-white outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 appearance-none transition-all"
+                          className="w-full h-10 rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 text-sm text-gray-900 dark:text-white outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 appearance-none transition-all"
                           value={formData.semester}
                           onChange={(event) => handleFieldChange('semester', Number(event.target.value))}
                         >
                           {Array.from({ length: 14 }, (_, i) => i + 1).map((s) => (
-                            <option key={s} value={s} className="bg-[#05080f] text-white">Semester {s}</option>
+                            <option key={s} value={s} className="bg-[#05080f] text-gray-900 dark:text-white">Semester {s}</option>
                           ))}
                         </select>
-                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-white/50">
+                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500 dark:text-white/50">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                       </div>
@@ -368,7 +368,7 @@ export default function PublicSubmission() {
                     <FormField label="Fakultas">
                       <div className="relative">
                         <select
-                          className="w-full h-10 rounded-md border border-white/10 bg-black/40 px-3 text-sm text-white outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 appearance-none transition-all"
+                          className="w-full h-10 rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 text-sm text-gray-900 dark:text-white outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 appearance-none transition-all"
                           value={formData.fakultas}
                           onChange={(event) => handleFieldChange('fakultas', event.target.value)}
                         >
@@ -376,7 +376,7 @@ export default function PublicSubmission() {
                           <option value="MIPA">MIPA</option>
                           <option value="Kelautan dan Perikanan">Kelautan dan Perikanan</option>
                         </select>
-                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-white/50">
+                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500 dark:text-white/50">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                       </div>
@@ -388,7 +388,7 @@ export default function PublicSubmission() {
                       <FormField label="Jurusan / Program Studi">
                         <div className="relative">
                           <select
-                            className="w-full h-10 rounded-md border border-white/10 bg-black/40 px-3 text-sm text-white outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 appearance-none transition-all"
+                            className="w-full h-10 rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 text-sm text-gray-900 dark:text-white outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 appearance-none transition-all"
                             value={formData.jurusan}
                             onChange={(event) => handleFieldChange('jurusan', event.target.value)}
                           >
@@ -396,7 +396,7 @@ export default function PublicSubmission() {
                               <option key={prodi} value={prodi}>{prodi}</option>
                             ))}
                           </select>
-                          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-white/50">
+                          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500 dark:text-white/50">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                           </div>
                         </div>
@@ -407,7 +407,7 @@ export default function PublicSubmission() {
                   <motion.div variants={itemVariants} className="md:col-span-2">
                     <FormField label="Alamat Domisili" icon={MapPin}>
                       <textarea
-                        className="w-full rounded-md border border-white/10 bg-black/40 px-3 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 min-h-[100px] transition-all resize-y"
+                        className="w-full rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:text-white/40 outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 min-h-[100px] transition-all resize-y"
                         placeholder="Jl. Prof. Sudarto No. 13, Tembalang..."
                         value={formData.address}
                         onChange={(event) => handleFieldChange('address', event.target.value)}
@@ -415,15 +415,15 @@ export default function PublicSubmission() {
                     </FormField>
                   </motion.div>
 
-                  <motion.div variants={itemVariants} className="md:col-span-2 space-y-4 pt-4 border-t border-white/10 mt-4">
-                    <p className="text-sm font-bold text-white uppercase tracking-widest">Informasi Perkaderan</p>
+                  <motion.div variants={itemVariants} className="md:col-span-2 space-y-4 pt-4 border-t border-gray-200 dark:border-white/10 mt-4">
+                    <p className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-widest">Informasi Perkaderan</p>
                     <div className="grid grid-cols-3 gap-4">
                       <FormField label="Tahun LK 1 *" error={validationErrors.tahun_lk1}>
                         <Input
                           placeholder="2023"
                           value={formData.tahun_lk1}
                           onChange={(event) => handleFieldChange('tahun_lk1', event.target.value)}
-                          className={`bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.tahun_lk1 ? 'border-red-500/50' : ''}`}
+                          className={`bg-white dark:bg-black/40 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:text-white/40 focus:border-green-500/50 focus:ring-green-500/20 ${validationErrors.tahun_lk1 ? 'border-red-500/50' : ''}`}
                           maxLength={4}
                           required
                         />
@@ -433,7 +433,7 @@ export default function PublicSubmission() {
                           placeholder="Opsional"
                           value={formData.tahun_lk2}
                           onChange={(event) => handleFieldChange('tahun_lk2', event.target.value)}
-                          className="bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20"
+                          className="bg-white dark:bg-black/40 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:text-white/40 focus:border-green-500/50 focus:ring-green-500/20"
                           maxLength={4}
                         />
                       </FormField>
@@ -442,28 +442,28 @@ export default function PublicSubmission() {
                           placeholder="Opsional"
                           value={formData.tahun_lk3}
                           onChange={(event) => handleFieldChange('tahun_lk3', event.target.value)}
-                          className="bg-black/40 border-white/10 text-white placeholder:text-white/40 focus:border-green-500/50 focus:ring-green-500/20"
+                          className="bg-white dark:bg-black/40 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:text-white/40 focus:border-green-500/50 focus:ring-green-500/20"
                           maxLength={4}
                         />
                       </FormField>
                     </div>
                   </motion.div>
 
-                  <motion.div variants={itemVariants} className="md:col-span-2 space-y-4 pt-4 border-t border-white/10 mt-4">
-                    <p className="text-sm font-bold text-white uppercase tracking-widest">Dokumen Verifikasi Keanggotaan</p>
+                  <motion.div variants={itemVariants} className="md:col-span-2 space-y-4 pt-4 border-t border-gray-200 dark:border-white/10 mt-4">
+                    <p className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-widest">Dokumen Verifikasi Keanggotaan</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="md:col-span-1">
                         <FormField label="Jenis Dokumen">
                           <div className="relative">
                             <select
-                              className="w-full h-10 rounded-md border border-white/10 bg-black/40 px-3 text-sm text-white outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 appearance-none transition-all"
+                              className="w-full h-10 rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 text-sm text-gray-900 dark:text-white outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 appearance-none transition-all"
                               value={documentType}
                               onChange={(event) => setDocumentType(event.target.value as 'KRS' | 'UKT')}
                             >
-                              <option value="KRS" className="bg-[#05080f] text-white">Kartu Rencana Studi (KRS)</option>
-                              <option value="UKT" className="bg-[#05080f] text-white">Bukti Pembayaran UKT</option>
+                              <option value="KRS" className="bg-[#05080f] text-gray-900 dark:text-white">Kartu Rencana Studi (KRS)</option>
+                              <option value="UKT" className="bg-[#05080f] text-gray-900 dark:text-white">Bukti Pembayaran UKT</option>
                             </select>
-                            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-white/50">
+                            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500 dark:text-white/50">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                             </div>
                           </div>
@@ -487,13 +487,13 @@ export default function PublicSubmission() {
                             <label 
                               htmlFor="file-upload" 
                               className={`w-full flex items-center justify-between px-4 py-3 rounded-md border text-sm transition-all focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 cursor-pointer ${
-                                validationErrors.document ? 'border-red-500/50 bg-red-500/5' : 'border-white/10 bg-black/40 hover:bg-white/5 text-white/70'
+                                validationErrors.document ? 'border-red-500/50 bg-red-500/5' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-black/40 hover:bg-white dark:bg-white/5 text-gray-700 dark:text-white/70'
                               }`}
                             >
-                              <span className="truncate mr-4 text-white">
+                              <span className="truncate mr-4 text-gray-900 dark:text-white">
                                 {documentFile ? documentFile.name : 'Pilih file PDF, JPG, atau PNG maksimal 2MB...'}
                               </span>
-                              <div className="shrink-0 flex items-center gap-2 bg-white/10 px-3 py-1 rounded-md border border-white/10 text-xs text-white font-semibold uppercase tracking-wider hover:bg-white/20 transition-colors">
+                              <div className="shrink-0 flex items-center gap-2 bg-gray-200 dark:bg-white/10 px-3 py-1 rounded-md border border-gray-200 dark:border-white/10 text-xs text-gray-900 dark:text-white font-semibold uppercase tracking-wider hover:bg-white/20 transition-colors">
                                 <Upload className="w-3 h-3" />
                                 Cari File
                               </div>
@@ -529,9 +529,9 @@ export default function PublicSubmission() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8 }}
-                  className="pt-4 flex items-center justify-between border-t border-white/10"
+                  className="pt-4 flex items-center justify-between border-t border-gray-200 dark:border-white/10"
                 >
-                  <p className="text-xs text-white/40 hidden sm:block">
+                  <p className="text-xs text-gray-400 dark:text-white/40 hidden sm:block">
                     Pastikan informasi yang diisi valid.
                   </p>
                   <Button 
@@ -604,16 +604,16 @@ function AnimatedInfoCard({ items }: { items: InfoItem[] }) {
   const ActiveIcon = activeItem.icon;
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-2xl shadow-xl p-6 md:p-8 backdrop-blur-md max-w-sm">
+    <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl shadow-xl p-6 md:p-8 backdrop-blur-md max-w-sm">
       <div className="flex items-start gap-4">
         <div className="w-12 h-12 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center shrink-0 border border-green-500/20">
           <ActiveIcon className="w-6 h-6" />
         </div>
         <div className="w-full">
-          <p className={`text-xl font-bold text-white transition-opacity duration-300 ${showTitle ? 'opacity-100' : 'opacity-0'}`}>
+          <p className={`text-xl font-bold text-gray-900 dark:text-white transition-opacity duration-300 ${showTitle ? 'opacity-100' : 'opacity-0'}`}>
             {activeItem.title}
           </p>
-          <p className="text-sm text-white/60 mt-2 leading-relaxed min-h-[60px]">
+          <p className="text-sm text-gray-600 dark:text-white/60 mt-2 leading-relaxed min-h-[60px]">
             {typedText}
             <span className="inline-block w-[1.5px] h-4 bg-green-400 align-middle ml-1 animate-pulse" />
           </p>
@@ -645,7 +645,7 @@ function FormField({
 }) {
   return (
     <div className="space-y-2">
-      <label className="text-[11px] font-bold text-white/50 uppercase tracking-widest flex items-center gap-2">
+      <label className="text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest flex items-center gap-2">
         {Icon && <Icon className="w-3.5 h-3.5 text-green-500/70" />}
         {label}
       </label>

@@ -159,8 +159,8 @@ export default function FinancialReports() {
   return (
     <div className="space-y-8">
       <section>
-        <h2 className="text-2xl font-extrabold text-white font-headline tracking-tight">Laporan Keuangan</h2>
-        <p className="text-white/50">Kelola arus kas masuk dan keluar organisasi</p>
+        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white font-headline tracking-tight">Laporan Keuangan</h2>
+        <p className="text-gray-500 dark:text-white/50">Kelola arus kas masuk dan keluar organisasi</p>
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -187,7 +187,7 @@ export default function FinancialReports() {
       <div className="flex flex-col md:flex-row justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3 flex-1">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
             <Input 
               placeholder="Cari transaksi..." 
               className="pl-10"
@@ -195,18 +195,18 @@ export default function FinancialReports() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 shadow-2xl">
-            <Calendar className="w-4 h-4 text-white/40" />
+          <div className="flex items-center gap-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-1.5 shadow-2xl">
+            <Calendar className="w-4 h-4 text-gray-400 dark:text-white/40" />
             <input 
               type="date" 
-              className="text-xs text-white/70 outline-none bg-transparent"
+              className="text-xs text-gray-700 dark:text-white/70 outline-none bg-transparent"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
-            <span className="text-white/30">-</span>
+            <span className="text-gray-300 dark:text-white/30">-</span>
             <input 
               type="date" 
-              className="text-xs text-white/70 outline-none bg-transparent"
+              className="text-xs text-gray-700 dark:text-white/70 outline-none bg-transparent"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
@@ -243,35 +243,35 @@ export default function FinancialReports() {
         </div>
       </div>
 
-      <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-2xl">
+      <div className="bg-white dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-white/5 border-b border-white/10">
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">Tanggal</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">Deskripsi</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">Kategori</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest text-right">Jumlah</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest text-center">Tipe</th>
+              <tr className="bg-white dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">Tanggal</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">Deskripsi</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">Kategori</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest text-right">Jumlah</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest text-center">Tipe</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-gray-100 dark:divide-white/5">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-white/50">Memuat data...</td>
+                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-white/50">Memuat data...</td>
                 </tr>
               ) : filteredRecords.length > 0 ? (
                 filteredRecords.map((record) => (
-                  <tr key={record.id} className="hover:bg-white/5/50 transition-colors">
-                    <td className="px-6 py-4 text-sm text-white/70">
+                  <tr key={record.id} className="hover:bg-gray-50 dark:bg-white dark:bg-white/5/50 transition-colors">
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-white/70">
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-white/40" />
+                        <Calendar className="w-3.5 h-3.5 text-gray-400 dark:text-white/40" />
                         {new Date(record.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm font-bold text-white">{record.description}</td>
+                    <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">{record.description}</td>
                     <td className="px-6 py-4">
-                      <Badge variant="secondary" className="bg-white/10 text-white/70 border-none">{record.category}</Badge>
+                      <Badge variant="secondary" className="bg-gray-200 dark:bg-white/10 text-gray-700 dark:text-white/70 border-none">{record.category}</Badge>
                     </td>
                     <td className={cn(
                       "px-6 py-4 text-sm font-black text-right",
@@ -288,7 +288,7 @@ export default function FinancialReports() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-white/50 italic">Tidak ada data transaksi ditemukan.</td>
+                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-white/50 italic">Tidak ada data transaksi ditemukan.</td>
                 </tr>
               )}
             </tbody>
@@ -306,13 +306,13 @@ export default function FinancialReports() {
 
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white/5 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-white/10">
-            <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between">
+          <div className="bg-white dark:bg-white/5 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-200 dark:border-white/10">
+            <div className="px-6 py-5 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-white">Tambah Transaksi</h3>
-                <p className="text-xs text-white/50">Input pemasukan atau pengeluaran baru</p>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Tambah Transaksi</h3>
+                <p className="text-xs text-gray-500 dark:text-white/50">Input pemasukan atau pengeluaran baru</p>
               </div>
-              <button onClick={() => setIsCreateModalOpen(false)} className="text-white/40 hover:text-red-500 transition-colors">
+              <button onClick={() => setIsCreateModalOpen(false)} className="text-gray-400 dark:text-white/40 hover:text-red-500 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -320,7 +320,7 @@ export default function FinancialReports() {
             <form onSubmit={handleCreateTransaction} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">Tanggal</label>
+                  <label className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/50 font-semibold">Tanggal</label>
                   <Input
                     type="date"
                     value={newTransaction.date}
@@ -329,9 +329,9 @@ export default function FinancialReports() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">Tipe</label>
+                  <label className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/50 font-semibold">Tipe</label>
                   <select
-                    className="w-full h-10 rounded border border-white/10 bg-white/5 px-3 text-sm outline-none focus:ring-2 focus:ring-green-500/20"
+                    className="w-full h-10 rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 text-sm outline-none focus:ring-2 focus:ring-green-500/20"
                     value={newTransaction.type}
                     onChange={(event) =>
                       setNewTransaction((prev) => ({ ...prev, type: event.target.value as 'INCOME' | 'EXPENSE' }))
@@ -344,7 +344,7 @@ export default function FinancialReports() {
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">Deskripsi</label>
+                <label className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/50 font-semibold">Deskripsi</label>
                 <Input
                   placeholder="Contoh: Iuran Anggota"
                   value={newTransaction.description}
@@ -354,7 +354,7 @@ export default function FinancialReports() {
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">Kategori</label>
+                <label className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/50 font-semibold">Kategori</label>
                 <Input
                   placeholder="Contoh: Iuran"
                   value={newTransaction.category}
@@ -364,7 +364,7 @@ export default function FinancialReports() {
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">Jumlah</label>
+                <label className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/50 font-semibold">Jumlah</label>
                 <Input
                   type="number"
                   min="1"
@@ -400,7 +400,7 @@ function FinanceCard({ label, value, icon: Icon, trend, variant = 'primary' }: a
   };
 
   return (
-    <div className="bg-white/5 p-6 rounded-2xl border border-white/10 shadow-2xl space-y-4">
+    <div className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl space-y-4">
       <div className="flex items-center justify-between">
         <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center border", styles[variant as keyof typeof styles])}>
           <Icon className="w-6 h-6" />
@@ -415,8 +415,8 @@ function FinanceCard({ label, value, icon: Icon, trend, variant = 'primary' }: a
         )}
       </div>
       <div>
-        <p className="text-xs font-bold text-white/50 uppercase tracking-widest mb-1">{label}</p>
-        <p className="text-2xl font-black text-white font-headline">{value}</p>
+        <p className="text-xs font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest mb-1">{label}</p>
+        <p className="text-2xl font-black text-gray-900 dark:text-white font-headline">{value}</p>
       </div>
     </div>
   );

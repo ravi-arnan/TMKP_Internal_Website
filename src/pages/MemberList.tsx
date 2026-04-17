@@ -321,7 +321,7 @@ export default function MemberList() {
           {true && (
             <Button 
               variant="outline" 
-              className="gap-2 px-5 py-2.5 text-white/70 hover:text-green-400 hover:border-green-500"
+              className="gap-2 px-5 py-2.5 text-gray-700 dark:text-white/70 hover:text-green-400 hover:border-green-500"
               onClick={() => setIsImportModalOpen(true)}
             >
               <FileSpreadsheet className="w-4 h-4" />
@@ -330,7 +330,7 @@ export default function MemberList() {
           )}
           <Button 
             variant="outline" 
-            className="gap-2 px-5 py-2.5 text-white/70 hover:text-green-400 hover:border-green-500"
+            className="gap-2 px-5 py-2.5 text-gray-700 dark:text-white/70 hover:text-green-400 hover:border-green-500"
             onClick={handleExportCSV}
           >
             <Download className="w-4 h-4" />
@@ -369,9 +369,9 @@ export default function MemberList() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-8 border border-white/10 backdrop-blur-xl"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] bg-slate-900 text-gray-900 dark:text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-8 border border-gray-200 dark:border-white/10 backdrop-blur-xl"
           >
-            <div className="flex items-center gap-3 pr-6 border-r border-white/10">
+            <div className="flex items-center gap-3 pr-6 border-r border-gray-200 dark:border-white/10">
               <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center font-bold text-sm">
                 {selectedIds.length}
               </div>
@@ -382,7 +382,7 @@ export default function MemberList() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-white hover:bg-white/5/10 gap-2"
+                className="text-gray-900 dark:text-white hover:bg-white dark:bg-white/5/10 gap-2"
                 onClick={() => void handleBatchStatusUpdate('AKTIF')}
               >
                 <CheckCircle className="w-4 h-4 text-green-400" />
@@ -391,16 +391,16 @@ export default function MemberList() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-white hover:bg-white/5/10 gap-2"
+                className="text-gray-900 dark:text-white hover:bg-white dark:bg-white/5/10 gap-2"
                 onClick={() => void handleBatchStatusUpdate('NON-AKTIF')}
               >
-                <XCircle className="w-4 h-4 text-white/40" />
+                <XCircle className="w-4 h-4 text-gray-400 dark:text-white/40" />
                 <span>Non-Aktifkan</span>
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-white hover:bg-red-500/20 hover:text-red-400 gap-2"
+                className="text-gray-900 dark:text-white hover:bg-red-500/20 hover:text-red-400 gap-2"
                 onClick={handleBatchDelete}
               >
                 <Trash2 className="w-4 h-4" />
@@ -410,7 +410,7 @@ export default function MemberList() {
 
             <button 
               onClick={() => setSelectedIds([])}
-              className="ml-4 p-1 hover:bg-white/5/10 rounded-full transition-colors"
+              className="ml-4 p-1 hover:bg-white dark:bg-white/5/10 rounded-full transition-colors"
             >
               <XCircle className="w-5 h-5 opacity-50" />
             </button>
@@ -418,11 +418,11 @@ export default function MemberList() {
         )}
       </AnimatePresence>
 
-      <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-2xl">
+      <div className="bg-white dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-white/5 border-b border-white/10">
+              <tr className="bg-white dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
                 <th className="pl-6 py-4 w-10">
                   {true ? (
                     <input 
@@ -432,10 +432,10 @@ export default function MemberList() {
                       onChange={toggleSelectAll}
                     />
                   ) : (
-                    <span className="text-[10px] text-white/40 uppercase tracking-widest">No</span>
+                    <span className="text-[10px] text-gray-400 dark:text-white/40 uppercase tracking-widest">No</span>
                   )}
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">
                   <button 
                     className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('name')}
@@ -444,7 +444,7 @@ export default function MemberList() {
                     <SortIcon column="name" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">
                   <button 
                     className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('nim')}
@@ -453,7 +453,7 @@ export default function MemberList() {
                     <SortIcon column="nim" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">
                   <button 
                     className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('email')}
@@ -462,8 +462,8 @@ export default function MemberList() {
                     <SortIcon column="email" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">No. HP</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">No. HP</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">
                   <button 
                     className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('angkatan')}
@@ -472,7 +472,7 @@ export default function MemberList() {
                     <SortIcon column="angkatan" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">
                   <button 
                     className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('jurusan')}
@@ -481,7 +481,7 @@ export default function MemberList() {
                     <SortIcon column="jurusan" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest">
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest">
                   <button 
                     className="flex items-center gap-1 hover:text-green-400 transition-colors"
                     onClick={() => handleSort('status')}
@@ -490,24 +490,24 @@ export default function MemberList() {
                     <SortIcon column="status" currentConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-white/50 uppercase tracking-widest text-right">Aksi</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 dark:text-white/50 uppercase tracking-widest text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-gray-100 dark:divide-white/5">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-12 text-center text-white/50">Memuat data anggota...</td>
+                  <td colSpan={9} className="px-6 py-12 text-center text-gray-500 dark:text-white/50">Memuat data anggota...</td>
                 </tr>
               ) : filteredAndSortedMembers.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-12 text-center text-white/50">Belum ada data anggota.</td>
+                  <td colSpan={9} className="px-6 py-12 text-center text-gray-500 dark:text-white/50">Belum ada data anggota.</td>
                 </tr>
               ) : paginatedMembers.map((member) => (
                 <React.Fragment key={member.id}>
                   <tr 
                     className={cn(
-                      "hover:bg-white/5/80 transition-colors group cursor-pointer",
-                      expandedId === member.id && "bg-white/5",
+                      "hover:bg-gray-50 dark:bg-white dark:bg-white/5/80 transition-colors group cursor-pointer",
+                      expandedId === member.id && "bg-white dark:bg-white/5",
                       selectedIds.includes(member.id) && "bg-green-500/5"
                     )}
                     onClick={() => setExpandedId(expandedId === member.id ? null : member.id)}
@@ -526,12 +526,12 @@ export default function MemberList() {
                           }}
                         />
                       ) : (
-                        <span className="text-xs text-white/40">•</span>
+                        <span className="text-xs text-gray-400 dark:text-white/40">•</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-green-500/10 text-green-400 flex items-center justify-center font-semibold text-xs">
+                        <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 dark:border-white/10 bg-green-500/10 text-green-400 flex items-center justify-center font-semibold text-xs">
                           {member.photo_url ? (
                             <img src={member.photo_url} alt={member.name} className="w-full h-full object-cover" />
                           ) : (
@@ -540,18 +540,18 @@ export default function MemberList() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-bold text-white">{member.name}</p>
-                            {expandedId === member.id ? <ChevronUp className="w-3 h-3 text-white/40" /> : <ChevronDown className="w-3 h-3 text-white/40" />}
+                            <p className="text-sm font-bold text-gray-900 dark:text-white">{member.name}</p>
+                            {expandedId === member.id ? <ChevronUp className="w-3 h-3 text-gray-400 dark:text-white/40" /> : <ChevronDown className="w-3 h-3 text-gray-400 dark:text-white/40" />}
                           </div>
-                          <p className="text-[11px] text-white/50">{member.email}</p>
+                          <p className="text-[11px] text-gray-500 dark:text-white/50">{member.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm font-medium text-white/70">{member.nim}</td>
-                    <td className="px-6 py-4 text-sm text-white/70">{member.email}</td>
-                    <td className="px-6 py-4 text-sm text-white/70">{member.phone || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-white/70">{member.angkatan}</td>
-                    <td className="px-6 py-4 text-sm text-white/70">{member.jurusan}</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-700 dark:text-white/70">{member.nim}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-white/70">{member.email}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-white/70">{member.phone || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-white/70">{member.angkatan}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-white/70">{member.jurusan}</td>
                     <td className="px-6 py-4">
                       <Badge variant={member.status === 'AKTIF' ? 'success' : member.status === 'ALUMNI' ? 'info' : 'default'}>
                         {member.status}
@@ -592,7 +592,7 @@ export default function MemberList() {
                   </tr>
                   <AnimatePresence>
                     {expandedId === member.id && (
-                      <tr className="bg-white/5/50">
+                      <tr className="bg-gray-50 dark:bg-white dark:bg-white/5/50">
                         <td colSpan={9} className="px-6 py-0">
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
@@ -601,36 +601,36 @@ export default function MemberList() {
                             transition={{ duration: 0.3, ease: 'easeInOut' }}
                             className="overflow-hidden"
                           >
-                            <div className="py-6 grid grid-cols-1 md:grid-cols-4 gap-8 border-t border-white/5">
+                            <div className="py-6 grid grid-cols-1 md:grid-cols-4 gap-8 border-t border-gray-100 dark:border-white/5">
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest">
                                   <MapPin className="w-3 h-3" />
                                   Domisili
                                 </div>
-                                <p className="text-sm text-white/80 leading-relaxed">
+                                <p className="text-sm text-gray-700 dark:text-white/80 leading-relaxed">
                                   {member.address || 'Alamat belum diatur'}
                                 </p>
                               </div>
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest">
                                   <GraduationCap className="w-3 h-3" />
                                   Fakultas / Prodi
                                 </div>
-                                <p className="text-sm text-white/80">
+                                <p className="text-sm text-gray-700 dark:text-white/80">
                                   {member.fakultas || '-'} / {member.prodi || '-'}
                                 </p>
                               </div>
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest">
                                   <User className="w-3 h-3" />
                                   Tempat, Tgl Lahir
                                 </div>
-                                <p className="text-sm text-white/80">
+                                <p className="text-sm text-gray-700 dark:text-white/80">
                                   {member.tempat_tanggal_lahir || '-'}
                                 </p>
                               </div>
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest">
                                   <TrendingUp className="w-3 h-3" />
                                   Perkaderan (LK)
                                 </div>
@@ -652,9 +652,9 @@ export default function MemberList() {
           </table>
         </div>
 
-        <div className="px-6 py-4 bg-white/5/50 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10">
-          <p className="text-xs text-white/50">
-            Menampilkan halaman <span className="text-white font-semibold">{currentPage}</span> dari <span className="text-white font-semibold">{totalPages}</span> · total <span className="text-white font-semibold">{filteredAndSortedMembers.length}</span> hasil
+        <div className="px-6 py-4 bg-gray-50 dark:bg-white dark:bg-white/5/50 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200 dark:border-white/10">
+          <p className="text-xs text-gray-500 dark:text-white/50">
+            Menampilkan halaman <span className="text-gray-900 dark:text-white font-semibold">{currentPage}</span> dari <span className="text-gray-900 dark:text-white font-semibold">{totalPages}</span> · total <span className="text-gray-900 dark:text-white font-semibold">{filteredAndSortedMembers.length}</span> hasil
           </p>
           <div className="flex items-center gap-1">
             <Button
@@ -681,7 +681,7 @@ export default function MemberList() {
                 </Button>
               );
             })}
-            {totalPages > 5 && <span className="text-white/40 px-1">...</span>}
+            {totalPages > 5 && <span className="text-gray-400 dark:text-white/40 px-1">...</span>}
             {totalPages > 5 && (
               <Button
                 variant={currentPage === totalPages ? 'primary' : 'outline'}
@@ -727,11 +727,11 @@ function FilterGroup({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-[10px] uppercase tracking-widest text-white/50 font-semibold px-1">{label}</label>
+      <label className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/50 font-semibold px-1">{label}</label>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="bg-white/5 border border-white/10 text-sm text-white rounded px-4 py-2 focus:ring-2 focus:ring-green-500/20 appearance-none min-w-[120px] cursor-pointer outline-none"
+        className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-sm text-gray-900 dark:text-white rounded px-4 py-2 focus:ring-2 focus:ring-green-500/20 appearance-none min-w-[120px] cursor-pointer outline-none"
       >
         {options.map(opt => <option key={opt}>{opt}</option>)}
       </select>
@@ -741,9 +741,9 @@ function FilterGroup({
 
 function InsightCard({ label, value, icon: Icon, variant = 'primary' }: any) {
   return (
-    <div className="bg-white/5 p-5 rounded-xl border border-white/10 flex items-center justify-between shadow-2xl">
+    <div className="bg-white dark:bg-white/5 p-5 rounded-xl border border-gray-200 dark:border-white/10 flex items-center justify-between shadow-2xl">
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-1">{label}</p>
+        <p className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/50 font-bold mb-1">{label}</p>
         <p className={cn("text-2xl font-black font-headline", variant === 'secondary' ? "text-emerald-400" : "text-green-400")}>{value}</p>
       </div>
       <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", variant === 'secondary' ? "bg-emerald-500/5 text-emerald-400" : "bg-green-500/5 text-green-400")}>

@@ -46,6 +46,7 @@ export default function Frontpage() {
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
           <a href="#transparency" className="hover:text-white transition-colors">Laporan Keuangan</a>
           <Link to="/submission" className="hover:text-white transition-colors">Pendataan Anggota</Link>
+          <Link to="/peminjaman" className="hover:text-white transition-colors">Peminjaman Barang</Link>
           <a href="https://www.instagram.com/hmi.tmkp.unud" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Tentang Organisasi</a>
           <a href="mailto:hmikomisariattmkp47@gmail.com" className="hover:text-white transition-colors">Kontak</a>
         </div>

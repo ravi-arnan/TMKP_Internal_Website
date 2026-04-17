@@ -49,3 +49,22 @@ export interface FinancialRecord {
   type: 'INCOME' | 'EXPENSE';
   created_at: string;
 }
+
+export type BorrowingStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'RETURNED';
+
+export interface BorrowingRequest {
+  id: string;
+  requester_name: string;
+  requester_email: string;
+  requester_phone?: string;
+  requester_affiliation?: string;
+  item_name: string;
+  quantity: number;
+  purpose: string;
+  borrow_date: string;
+  return_date: string;
+  notes?: string;
+  status: BorrowingStatus;
+  admin_note?: string;
+  created_at: string;
+}
