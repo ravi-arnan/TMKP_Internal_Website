@@ -59,6 +59,7 @@ export interface BorrowingRequest {
   requester_phone?: string;
   requester_affiliation?: string;
   item_name: string;
+  item_id?: string;
   quantity: number;
   purpose: string;
   borrow_date: string;
@@ -67,4 +68,18 @@ export interface BorrowingRequest {
   status: BorrowingStatus;
   admin_note?: string;
   created_at: string;
+}
+
+export type InventoryCondition = 'BAIK' | 'RUSAK RINGAN' | 'RUSAK BERAT';
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  description?: string;
+  total_stock: number;
+  available_stock: number;
+  category?: string;
+  condition: InventoryCondition;
+  created_at: string;
+  updated_at: string;
 }

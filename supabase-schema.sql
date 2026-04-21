@@ -206,3 +206,71 @@ create policy "Allow public delete borrowing_requests"
   to anon, authenticated
   using (true);
 
+-- Inventory Items
+create table if not exists public.inventory_items (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  description text,
+  total_stock integer not null default 1 check (total_stock >= 0),
+  available_stock integer not null default 1 check (available_stock >= 0),
+  category text,
+  condition text not null default 'BAIK' check (condition in ('BAIK','RUSAK RINGAN','RUSAK BERAT')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Tambah referensi item ke borrowing_requests
+alter table public.borrowing_requests
+  add column if not exists item_id uuid references public.inventory_items(id) on delete set null;
+
+-- Index inventaris
+create index if not exists idx_inventory_name on public.inventory_items(name);
+create index if not exists idx_inventory_category on public.inventory_items(category);
+
+-- RLS inventory_items
+alter table public.inventory_items enable row level security;
+
+create policy "Allow public read inventory_items"
+  on public.inventory_items for select
+  to anon, authenticated
+  using (true);
+
+create policy "Allow public insert inventory_items"
+  on public.inventory_items for insert
+  to anon, authenticated
+  with check (true);
+
+create policy "Allow public update inventory_items"
+  on public.inventory_items for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
+create policy "Allow public delete inventory_items"
+  on public.inventory_items for delete
+  to anon, authenticated
+  using (true);
+
+-- ============================================
+-- Functions untuk auto-adjust stok inventaris
+-- ============================================
+
+create or replace function decrement_inventory_stock(item_id uuid, qty integer)
+returns void language plpgsql as $$
+begin
+  update public.inventory_items
+  set available_stock = greatest(0, available_stock - qty),
+      updated_at = now()
+  where id = item_id;
+end;
+$$;
+
+create or replace function increment_inventory_stock(item_id uuid, qty integer)
+returns void language plpgsql as $$
+begin
+  update public.inventory_items
+  set available_stock = least(total_stock, available_stock + qty),
+      updated_at = now()
+  where id = item_id;
+end;
+$$;

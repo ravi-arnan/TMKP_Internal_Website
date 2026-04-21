@@ -1,4 +1,4 @@
-import { type ComponentType, type FormEvent, type ReactNode, useState } from 'react';
+import { type ComponentType, type FormEvent, type ReactNode, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   AlertCircle,
@@ -6,6 +6,7 @@ import {
   CalendarDays,
   CheckCircle2,
   ClipboardList,
+  ChevronDown,
   Hash,
   Loader2,
   Mail,
@@ -18,7 +19,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/src/components/ui/Button';
 import { Input } from '@/src/components/ui/Input';
-import { borrowingService } from '@/src/lib/supabase';
+import { borrowingService, inventoryService } from '@/src/lib/supabase';
+import { InventoryItem } from '@/src/types';
 import { useToast } from '@/src/lib/toast-context';
 import { motion } from 'motion/react';
 import { cn } from '@/src/lib/utils';
@@ -33,11 +35,14 @@ export default function PublicBorrowing() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [loadingItems, setLoadingItems] = useState(true);
   const [formData, setFormData] = useState({
     requester_name: '',
     requester_email: '',
     requester_phone: '',
     requester_affiliation: '',
+    item_id: '',
     item_name: '',
     quantity: 1,
     purpose: '',
@@ -46,11 +51,38 @@ export default function PublicBorrowing() {
     notes: '',
   });
 
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const data = await inventoryService.getItems();
+        setInventoryItems(data);
+      } catch {
+        // graceful — still allow freetext fallback
+      } finally {
+        setLoadingItems(false);
+      }
+    };
+    void fetchItems();
+  }, []);
+
+  const selectedItem = inventoryItems.find(i => i.id === formData.item_id);
+
   const handleFieldChange = <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
     if (validationErrors[key as string]) {
       setValidationErrors((prev) => ({ ...prev, [key as string]: '' }));
     }
+  };
+
+  const handleItemSelect = (itemId: string) => {
+    const item = inventoryItems.find(i => i.id === itemId);
+    setFormData(prev => ({
+      ...prev,
+      item_id: itemId,
+      item_name: item?.name ?? '',
+      quantity: 1,
+    }));
+    setValidationErrors(prev => ({ ...prev, item_id: '', quantity: '' }));
   };
 
   const validateForm = (): boolean => {
@@ -63,9 +95,18 @@ export default function PublicBorrowing() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.requester_email))
       errors.requester_email = 'Format email tidak valid';
 
-    if (!formData.item_name.trim()) errors.item_name = 'Nama barang wajib diisi';
+    if (!formData.item_id && inventoryItems.length > 0) errors.item_id = 'Pilih barang yang ingin dipinjam';
+    if (!formData.item_name.trim()) errors.item_id = 'Pilih barang yang ingin dipinjam';
     if (!formData.purpose.trim()) errors.purpose = 'Keperluan wajib diisi';
     if (!formData.quantity || formData.quantity < 1) errors.quantity = 'Jumlah minimal 1';
+
+    if (selectedItem && formData.quantity > selectedItem.available_stock) {
+      errors.quantity = `Stok tersedia hanya ${selectedItem.available_stock}`;
+    }
+    if (selectedItem && selectedItem.available_stock === 0) {
+      errors.item_id = 'Barang ini sedang tidak tersedia (stok habis)';
+    }
+
     if (!formData.borrow_date) errors.borrow_date = 'Tanggal pinjam wajib diisi';
     if (!formData.return_date) errors.return_date = 'Tanggal kembali wajib diisi';
     if (formData.borrow_date && formData.return_date && formData.return_date < formData.borrow_date) {
@@ -87,7 +128,11 @@ export default function PublicBorrowing() {
 
     setIsSaving(true);
     try {
-      await borrowingService.createRequest({ ...formData, status: 'PENDING' });
+      await borrowingService.createRequest({
+        ...formData,
+        item_id: formData.item_id || undefined,
+        status: 'PENDING',
+      });
       toast.success('Permintaan terkirim', 'Admin akan meninjau permintaan peminjaman Anda.');
       setIsSubmitted(true);
     } catch (error) {
@@ -215,20 +260,82 @@ export default function PublicBorrowing() {
                       />
                     </FormField>
 
-                    <FormField label="Nama Barang" icon={Package} error={validationErrors.item_name}>
-                      <Input
-                        placeholder="Cth: Proyektor, Sound System, Kursi"
-                        value={formData.item_name}
-                        onChange={(e) => handleFieldChange('item_name', e.target.value)}
-                        className={cn(validationErrors.item_name && 'border-red-500/50')}
-                        required
-                      />
-                    </FormField>
+                    {/* Item Picker */}
+                    <div className="md:col-span-2">
+                      <FormField label="Pilih Barang" icon={Package} error={validationErrors.item_id}>
+                        {loadingItems ? (
+                          <div className="flex items-center gap-2 px-3 py-3 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-400">
+                            <Loader2 className="w-4 h-4 animate-spin" /> Memuat daftar barang...
+                          </div>
+                        ) : inventoryItems.length === 0 ? (
+                          <Input
+                            placeholder="Cth: Proyektor, Sound System, Kursi"
+                            value={formData.item_name}
+                            onChange={(e) => handleFieldChange('item_name', e.target.value)}
+                            className={cn(validationErrors.item_id && 'border-red-500/50')}
+                            required
+                          />
+                        ) : (
+                          <div className="relative">
+                            <select
+                              className={cn(
+                                'w-full appearance-none rounded-lg border px-3 py-2.5 pr-10 text-sm outline-none transition-all',
+                                'bg-white border-gray-200 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-500/20',
+                                'dark:bg-white/5 dark:border-white/10 dark:text-white dark:focus:border-green-500/50',
+                                validationErrors.item_id && 'border-red-500/50',
+                              )}
+                              value={formData.item_id}
+                              onChange={e => handleItemSelect(e.target.value)}
+                            >
+                              <option value="">— Pilih barang yang ingin dipinjam —</option>
+                              {inventoryItems.map(item => (
+                                <option
+                                  key={item.id}
+                                  value={item.id}
+                                  disabled={item.available_stock === 0}
+                                >
+                                  {item.name}
+                                  {item.category ? ` (${item.category})` : ''}
+                                  {' — '}
+                                  {item.available_stock === 0
+                                    ? 'Stok Habis'
+                                    : `${item.available_stock} tersedia`}
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                          </div>
+                        )}
+
+                        {/* Selected item info card */}
+                        {selectedItem && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-2 flex items-center justify-between px-3 py-2 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded-lg"
+                          >
+                            <div className="text-xs text-green-700 dark:text-green-400">
+                              <span className="font-bold">{selectedItem.name}</span>
+                              {selectedItem.description && <span className="ml-2 opacity-70">— {selectedItem.description}</span>}
+                            </div>
+                            <div className={cn(
+                              'text-[10px] font-bold px-2 py-0.5 rounded-full',
+                              selectedItem.available_stock === 0
+                                ? 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'
+                                : 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
+                            )}>
+                              {selectedItem.available_stock} / {selectedItem.total_stock} tersedia
+                            </div>
+                          </motion.div>
+                        )}
+                      </FormField>
+                    </div>
 
                     <FormField label="Jumlah" icon={Hash} error={validationErrors.quantity}>
                       <Input
                         type="number"
                         min={1}
+                        max={selectedItem?.available_stock ?? undefined}
                         value={formData.quantity}
                         onChange={(e) => handleFieldChange('quantity', Number(e.target.value))}
                         className={cn(validationErrors.quantity && 'border-red-500/50')}

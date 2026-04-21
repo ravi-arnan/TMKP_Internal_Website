@@ -1,18 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, ArrowRight, Sun } from "lucide-react";
+import { ArrowRight, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import Hls from "hls.js";
 import LoginModal from "@/src/components/LoginModal";
 
 export default function Frontpage() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoSrc = "https://stream.mux.com/T6oQJQ02cQ6N01TR6iHwZkKFkbepS34dkkIc9iukgy400g.m3u8";
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+
+    const handleCanPlay = () => setIsVideoReady(true);
+    video.addEventListener("canplay", handleCanPlay);
 
     if (Hls.isSupported()) {
       const hls = new Hls();
@@ -23,12 +27,16 @@ export default function Frontpage() {
       });
       return () => {
         hls.destroy();
+        video.removeEventListener("canplay", handleCanPlay);
       };
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = videoSrc;
       video.addEventListener("loadedmetadata", () => {
         video.play().catch((e) => console.log("Auto-play prevented:", e));
       });
+      return () => {
+        video.removeEventListener("canplay", handleCanPlay);
+      };
     }
   }, []);
 
@@ -54,15 +62,17 @@ export default function Frontpage() {
 
       {/* Hero Section Component */}
       <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden min-h-screen">
-        {/* Background Video Layer */}
+        {/* Background Video Layer — fades in only after video is ready to avoid flash */}
         <video
           ref={videoRef}
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-60"
-          style={{ filter: 'hue-rotate(-130deg) saturate(1.2)' }}
-          poster="https://images.unsplash.com/photo-1647356191320-d7a1f80ca777?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGRhcmslMjB0ZWNobm9sb2d5JTIwbmV1cmFsJTIwbmV0d29ya3xlbnwxfHx8fDE3Njg5NzIyNTV8MA&ixlib=rb-4.1.0&q=80&w=1080"
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+          style={{
+            filter: 'hue-rotate(-130deg) saturate(1.2)',
+            opacity: isVideoReady ? 0.6 : 0,
+          }}
         />
 
         {/* Video Overlay */}

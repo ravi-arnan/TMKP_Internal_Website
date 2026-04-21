@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { BorrowingRequest, BorrowingStatus, DashboardStats, FinancialRecord, Member, VerificationRequest } from '../types';
+import { BorrowingRequest, BorrowingStatus, DashboardStats, FinancialRecord, InventoryCondition, InventoryItem, Member, VerificationRequest } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || 
@@ -259,6 +259,7 @@ type BorrowingRow = {
   requester_phone: string | null;
   requester_affiliation: string | null;
   item_name: string;
+  item_id: string | null;
   quantity: number;
   purpose: string;
   borrow_date: string;
@@ -276,6 +277,7 @@ const mapBorrowing = (row: BorrowingRow): BorrowingRequest => ({
   requester_phone: row.requester_phone ?? undefined,
   requester_affiliation: row.requester_affiliation ?? undefined,
   item_name: row.item_name,
+  item_id: row.item_id ?? undefined,
   quantity: Number(row.quantity),
   purpose: row.purpose,
   borrow_date: row.borrow_date,
@@ -294,6 +296,7 @@ export const borrowingService = {
       requester_phone: request.requester_phone ?? null,
       requester_affiliation: request.requester_affiliation ?? null,
       item_name: request.item_name,
+      item_id: request.item_id ?? null,
       quantity: request.quantity,
       purpose: request.purpose,
       borrow_date: request.borrow_date,
@@ -325,9 +328,100 @@ export const borrowingService = {
     status: BorrowingStatus,
     adminNote?: string,
   ): Promise<void> => {
+    // Fetch current request to get item_id, quantity and old status for stock adjustment
+    const { data: current, error: fetchErr } = await supabase
+      .from('borrowing_requests')
+      .select('item_id, quantity, status')
+      .eq('id', id)
+      .single();
+    if (fetchErr) throw fetchErr;
+
     const payload: { status: BorrowingStatus; admin_note?: string | null } = { status };
     if (adminNote !== undefined) payload.admin_note = adminNote || null;
+
     const { error } = await supabase.from('borrowing_requests').update(payload).eq('id', id);
+    if (error) throw error;
+
+    // Adjust inventory stock
+    if (current?.item_id) {
+      const oldStatus: BorrowingStatus = current.status;
+      const qty: number = Number(current.quantity);
+
+      // APPROVED: decrement available stock
+      if (status === 'APPROVED' && oldStatus !== 'APPROVED') {
+        await supabase.rpc('decrement_inventory_stock', { item_id: current.item_id, qty });
+      }
+      // RETURNED or REJECTED after APPROVED: increment available stock back
+      if ((status === 'RETURNED' || status === 'REJECTED') && oldStatus === 'APPROVED') {
+        await supabase.rpc('increment_inventory_stock', { item_id: current.item_id, qty });
+      }
+    }
+  },
+};
+
+type InventoryRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  total_stock: number;
+  available_stock: number;
+  category: string | null;
+  condition: InventoryCondition;
+  created_at: string;
+  updated_at: string;
+};
+
+const mapInventory = (row: InventoryRow): InventoryItem => ({
+  id: row.id,
+  name: row.name,
+  description: row.description ?? undefined,
+  total_stock: Number(row.total_stock),
+  available_stock: Number(row.available_stock),
+  category: row.category ?? undefined,
+  condition: row.condition,
+  created_at: row.created_at,
+  updated_at: row.updated_at,
+});
+
+export const inventoryService = {
+  getItems: async (): Promise<InventoryItem[]> => {
+    const { data, error } = await supabase
+      .from('inventory_items')
+      .select('*')
+      .order('name', { ascending: true });
+    if (error) throw error;
+    return (data as InventoryRow[]).map(mapInventory);
+  },
+
+  createItem: async (item: Partial<InventoryItem>): Promise<InventoryItem> => {
+    const payload = {
+      name: item.name,
+      description: item.description ?? null,
+      total_stock: item.total_stock ?? 1,
+      available_stock: item.total_stock ?? 1, // on create, available = total
+      category: item.category ?? null,
+      condition: item.condition ?? 'BAIK',
+    };
+    const { data, error } = await supabase.from('inventory_items').insert(payload).select('*').single();
+    if (error) throw error;
+    return mapInventory(data as InventoryRow);
+  },
+
+  updateItem: async (id: string, item: Partial<InventoryItem>): Promise<InventoryItem> => {
+    const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (item.name !== undefined) payload.name = item.name;
+    if (item.description !== undefined) payload.description = item.description ?? null;
+    if (item.total_stock !== undefined) payload.total_stock = item.total_stock;
+    if (item.available_stock !== undefined) payload.available_stock = item.available_stock;
+    if (item.category !== undefined) payload.category = item.category ?? null;
+    if (item.condition !== undefined) payload.condition = item.condition;
+    const { data, error } = await supabase.from('inventory_items').update(payload).eq('id', id).select('*').single();
+    if (error) throw error;
+    return mapInventory(data as InventoryRow);
+  },
+
+  deleteItem: async (id: string): Promise<void> => {
+    const { error } = await supabase.from('inventory_items').delete().eq('id', id);
     if (error) throw error;
   },
 };
