@@ -1,5 +1,10 @@
 -- SQL Schema untuk database Supabase project "hmi-tmkp"
 -- Jalankan script ini di Supabase SQL Editor
+-- Script ini idempotent: aman dijalankan berulang kali
+
+-- ============================================
+-- Tables
+-- ============================================
 
 -- Tabel anggota HMI TMKP
 create table if not exists public.members (
@@ -70,143 +75,7 @@ create table if not exists public.borrowing_requests (
   created_at timestamptz not null default now()
 );
 
--- Index untuk performa query
-create index if not exists idx_members_status on public.members(status);
-create index if not exists idx_members_angkatan on public.members(angkatan);
-create index if not exists idx_members_created_at on public.members(created_at desc);
-create index if not exists idx_financial_date on public.financial_records(date desc);
-create index if not exists idx_financial_type on public.financial_records(type);
-create index if not exists idx_verification_status on public.verification_requests(status);
-create index if not exists idx_verification_member on public.verification_requests(member_id);
-create index if not exists idx_borrowing_status on public.borrowing_requests(status);
-create index if not exists idx_borrowing_created_at on public.borrowing_requests(created_at desc);
-
--- ============================================
--- Row Level Security (RLS) Policies
--- Mengizinkan akses publik (anon) untuk operasi CRUD
--- ============================================
-
--- Members
-alter table public.members enable row level security;
-
-create policy "Allow public read members"
-  on public.members for select
-  to anon, authenticated
-  using (true);
-
-create policy "Allow public insert members"
-  on public.members for insert
-  to anon, authenticated
-  with check (true);
-
-create policy "Allow public update members"
-  on public.members for update
-  to anon, authenticated
-  using (true)
-  with check (true);
-
-create policy "Allow public delete members"
-  on public.members for delete
-  to anon, authenticated
-  using (true);
-
--- Financial Records
-alter table public.financial_records enable row level security;
-
-create policy "Allow public read financial_records"
-  on public.financial_records for select
-  to anon, authenticated
-  using (true);
-
-create policy "Allow public insert financial_records"
-  on public.financial_records for insert
-  to anon, authenticated
-  with check (true);
-
-create policy "Allow public update financial_records"
-  on public.financial_records for update
-  to anon, authenticated
-  using (true)
-  with check (true);
-
-create policy "Allow public delete financial_records"
-  on public.financial_records for delete
-  to anon, authenticated
-  using (true);
-
--- Verification Requests
-alter table public.verification_requests enable row level security;
-
-create policy "Allow public read verification_requests"
-  on public.verification_requests for select
-  to anon, authenticated
-  using (true);
-
-create policy "Allow public insert verification_requests"
-  on public.verification_requests for insert
-  to anon, authenticated
-  with check (true);
-
-create policy "Allow public update verification_requests"
-  on public.verification_requests for update
-  to anon, authenticated
-  using (true)
-  with check (true);
-
-create policy "Allow public delete verification_requests"
-  on public.verification_requests for delete
-  to anon, authenticated
-  using (true);
-
--- App Settings
-alter table public.app_settings enable row level security;
-
-create policy "Allow public read app_settings"
-  on public.app_settings for select
-  to anon, authenticated
-  using (true);
-
-create policy "Allow public insert app_settings"
-  on public.app_settings for insert
-  to anon, authenticated
-  with check (true);
-
-create policy "Allow public update app_settings"
-  on public.app_settings for update
-  to anon, authenticated
-  using (true)
-  with check (true);
-
-create policy "Allow public delete app_settings"
-  on public.app_settings for delete
-  to anon, authenticated
-  using (true);
-
--- Borrowing Requests
-alter table public.borrowing_requests enable row level security;
-
-create policy "Allow public read borrowing_requests"
-  on public.borrowing_requests for select
-  to anon, authenticated
-  using (true);
-
-create policy "Allow public insert borrowing_requests"
-  on public.borrowing_requests for insert
-  to anon, authenticated
-  with check (true);
-
-create policy "Allow public update borrowing_requests"
-  on public.borrowing_requests for update
-  to anon, authenticated
-  using (true)
-  with check (true);
-
-create policy "Allow public delete borrowing_requests"
-  on public.borrowing_requests for delete
-  to anon, authenticated
-  using (true);
-
--- Inventory Items
+-- Tabel inventaris barang komisariat
 create table if not exists public.inventory_items (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -219,33 +88,194 @@ create table if not exists public.inventory_items (
   updated_at timestamptz not null default now()
 );
 
--- Tambah referensi item ke borrowing_requests
+-- Tambah referensi item ke borrowing_requests (idempotent via IF NOT EXISTS)
 alter table public.borrowing_requests
   add column if not exists item_id uuid references public.inventory_items(id) on delete set null;
 
--- Index inventaris
+-- ============================================
+-- Indexes
+-- ============================================
+
+create index if not exists idx_members_status on public.members(status);
+create index if not exists idx_members_angkatan on public.members(angkatan);
+create index if not exists idx_members_created_at on public.members(created_at desc);
+create index if not exists idx_financial_date on public.financial_records(date desc);
+create index if not exists idx_financial_type on public.financial_records(type);
+create index if not exists idx_verification_status on public.verification_requests(status);
+create index if not exists idx_verification_member on public.verification_requests(member_id);
+create index if not exists idx_borrowing_status on public.borrowing_requests(status);
+create index if not exists idx_borrowing_created_at on public.borrowing_requests(created_at desc);
 create index if not exists idx_inventory_name on public.inventory_items(name);
 create index if not exists idx_inventory_category on public.inventory_items(category);
 
--- RLS inventory_items
+-- ============================================
+-- Row Level Security (RLS) Policies
+-- Menggunakan DROP IF EXISTS sebelum CREATE agar idempotent
+-- ============================================
+
+-- Members
+alter table public.members enable row level security;
+
+drop policy if exists "Allow public read members" on public.members;
+create policy "Allow public read members"
+  on public.members for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "Allow public insert members" on public.members;
+create policy "Allow public insert members"
+  on public.members for insert
+  to anon, authenticated
+  with check (true);
+
+drop policy if exists "Allow public update members" on public.members;
+create policy "Allow public update members"
+  on public.members for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
+drop policy if exists "Allow public delete members" on public.members;
+create policy "Allow public delete members"
+  on public.members for delete
+  to anon, authenticated
+  using (true);
+
+-- Financial Records
+alter table public.financial_records enable row level security;
+
+drop policy if exists "Allow public read financial_records" on public.financial_records;
+create policy "Allow public read financial_records"
+  on public.financial_records for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "Allow public insert financial_records" on public.financial_records;
+create policy "Allow public insert financial_records"
+  on public.financial_records for insert
+  to anon, authenticated
+  with check (true);
+
+drop policy if exists "Allow public update financial_records" on public.financial_records;
+create policy "Allow public update financial_records"
+  on public.financial_records for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
+drop policy if exists "Allow public delete financial_records" on public.financial_records;
+create policy "Allow public delete financial_records"
+  on public.financial_records for delete
+  to anon, authenticated
+  using (true);
+
+-- Verification Requests
+alter table public.verification_requests enable row level security;
+
+drop policy if exists "Allow public read verification_requests" on public.verification_requests;
+create policy "Allow public read verification_requests"
+  on public.verification_requests for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "Allow public insert verification_requests" on public.verification_requests;
+create policy "Allow public insert verification_requests"
+  on public.verification_requests for insert
+  to anon, authenticated
+  with check (true);
+
+drop policy if exists "Allow public update verification_requests" on public.verification_requests;
+create policy "Allow public update verification_requests"
+  on public.verification_requests for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
+drop policy if exists "Allow public delete verification_requests" on public.verification_requests;
+create policy "Allow public delete verification_requests"
+  on public.verification_requests for delete
+  to anon, authenticated
+  using (true);
+
+-- App Settings
+alter table public.app_settings enable row level security;
+
+drop policy if exists "Allow public read app_settings" on public.app_settings;
+create policy "Allow public read app_settings"
+  on public.app_settings for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "Allow public insert app_settings" on public.app_settings;
+create policy "Allow public insert app_settings"
+  on public.app_settings for insert
+  to anon, authenticated
+  with check (true);
+
+drop policy if exists "Allow public update app_settings" on public.app_settings;
+create policy "Allow public update app_settings"
+  on public.app_settings for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
+drop policy if exists "Allow public delete app_settings" on public.app_settings;
+create policy "Allow public delete app_settings"
+  on public.app_settings for delete
+  to anon, authenticated
+  using (true);
+
+-- Borrowing Requests
+alter table public.borrowing_requests enable row level security;
+
+drop policy if exists "Allow public read borrowing_requests" on public.borrowing_requests;
+create policy "Allow public read borrowing_requests"
+  on public.borrowing_requests for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "Allow public insert borrowing_requests" on public.borrowing_requests;
+create policy "Allow public insert borrowing_requests"
+  on public.borrowing_requests for insert
+  to anon, authenticated
+  with check (true);
+
+drop policy if exists "Allow public update borrowing_requests" on public.borrowing_requests;
+create policy "Allow public update borrowing_requests"
+  on public.borrowing_requests for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
+drop policy if exists "Allow public delete borrowing_requests" on public.borrowing_requests;
+create policy "Allow public delete borrowing_requests"
+  on public.borrowing_requests for delete
+  to anon, authenticated
+  using (true);
+
+-- Inventory Items
 alter table public.inventory_items enable row level security;
 
+drop policy if exists "Allow public read inventory_items" on public.inventory_items;
 create policy "Allow public read inventory_items"
   on public.inventory_items for select
   to anon, authenticated
   using (true);
 
+drop policy if exists "Allow public insert inventory_items" on public.inventory_items;
 create policy "Allow public insert inventory_items"
   on public.inventory_items for insert
   to anon, authenticated
   with check (true);
 
+drop policy if exists "Allow public update inventory_items" on public.inventory_items;
 create policy "Allow public update inventory_items"
   on public.inventory_items for update
   to anon, authenticated
   using (true)
   with check (true);
 
+drop policy if exists "Allow public delete inventory_items" on public.inventory_items;
 create policy "Allow public delete inventory_items"
   on public.inventory_items for delete
   to anon, authenticated
@@ -253,6 +283,7 @@ create policy "Allow public delete inventory_items"
 
 -- ============================================
 -- Functions untuk auto-adjust stok inventaris
+-- (create or replace = idempotent by default)
 -- ============================================
 
 create or replace function decrement_inventory_stock(item_id uuid, qty integer)
