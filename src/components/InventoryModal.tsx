@@ -91,11 +91,11 @@ export default function InventoryModal({ isOpen, onClose, onSuccess, editItem }:
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden dark:border dark:border-white/10"
+        className="bg-white dark:bg-black/80 dark:backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-200 dark:border-white/10"
       >
         {/* Header */}
         <div className="p-6 border-b border-slate-100 dark:border-white/10 flex justify-between items-center">
@@ -178,12 +178,12 @@ export default function InventoryModal({ isOpen, onClose, onSuccess, editItem }:
                 Kategori
               </label>
               <select
-                className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-all bg-white border-gray-200 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:bg-white/5 dark:border-white/10 dark:text-white dark:focus:border-green-500/50"
+                className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-all bg-white border-gray-200 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:bg-[#0a0a0a] dark:border-white/10 dark:text-white dark:focus:border-green-500/50"
                 value={form.category}
                 onChange={e => set('category', e.target.value)}
               >
-                <option value="">— Pilih Kategori —</option>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                <option value="" className="dark:bg-[#0a0a0a]">— Pilih Kategori —</option>
+                {CATEGORIES.map(c => <option key={c} value={c} className="dark:bg-[#0a0a0a]">{c}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
@@ -191,11 +191,11 @@ export default function InventoryModal({ isOpen, onClose, onSuccess, editItem }:
                 Kondisi *
               </label>
               <select
-                className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-all bg-white border-gray-200 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:bg-white/5 dark:border-white/10 dark:text-white dark:focus:border-green-500/50"
+                className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-all bg-white border-gray-200 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:bg-[#0a0a0a] dark:border-white/10 dark:text-white dark:focus:border-green-500/50"
                 value={form.condition}
                 onChange={e => set('condition', e.target.value as InventoryCondition)}
               >
-                {CONDITIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                {CONDITIONS.map(c => <option key={c.value} value={c.value} className="dark:bg-[#0a0a0a]">{c.label}</option>)}
               </select>
             </div>
           </div>

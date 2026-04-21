@@ -131,7 +131,6 @@ export default function BorrowingReview() {
   const tabTint = (tab: Tab) => {
     if (tab === 'REJECTED') return 'text-red-600 dark:text-red-400 border-red-500 dark:border-red-400';
     if (tab === 'RETURNED') return 'text-blue-600 dark:text-blue-400 border-blue-500 dark:border-blue-400';
-    if (tab === 'INVENTORY') return 'text-purple-600 dark:text-purple-400 border-purple-500 dark:border-purple-400';
     return 'text-green-700 dark:text-green-400 border-green-600 dark:border-green-400';
   };
 
@@ -178,7 +177,6 @@ export default function BorrowingReview() {
                     : 'bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-white/60',
                   isActive && tab === 'REJECTED' && 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400',
                   isActive && tab === 'RETURNED' && 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
-                  isActive && tab === 'INVENTORY' && 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400',
                 )}
               >
                 {counts[tab]}
