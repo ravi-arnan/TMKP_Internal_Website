@@ -234,18 +234,19 @@ export default function PublicSubmission() {
       <div className="fixed bottom-[-10%] right-[10%] w-[500px] h-[500px] bg-emerald-900/10 blur-[120px] rounded-full pointer-events-none" />
 
       {/* Header */}
-      <nav className="relative z-50 px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5 bg-white dark:bg-white dark:bg-black/40 dark:backdrop-blur-md">
+      <nav className="relative z-50 px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5 bg-white dark:bg-black/40 dark:backdrop-blur-md">
         <Link to="/" className="flex items-center gap-2 group">
           <Sun className="w-6 h-6 text-green-400 group-hover:scale-110 transition-transform duration-300" />
           <span className="font-bold tracking-wide text-gray-900 dark:text-white">HMI TMKP</span>
         </Link>
         <Link to="/">
-          <button className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-white/70 hover:text-gray-900 dark:text-white transition-colors duration-300 bg-white dark:bg-white/5 hover:bg-gray-200 dark:bg-white/10 px-4 py-2 rounded-full border border-gray-200 dark:border-white/10">
+          <button className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 px-4 py-2 rounded-full border border-gray-200 dark:border-white/10">
             <ArrowLeft className="w-4 h-4" />
             Kembali ke Beranda
           </button>
         </Link>
       </nav>
+
 
       <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-12 md:py-20 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16">
